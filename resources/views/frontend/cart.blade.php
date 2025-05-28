@@ -178,7 +178,7 @@
                                         <span class="text-black-50">{{ $product->price - $product->discount }}
                                             {{ get_general_value('currancy') }}</span>
                                     </div>
-                    
+
                                     <div class="col-12 col-md-3 col-lg-5 my-3 px-0">
                                         <div class="container">
                                             <div class="row align-items-center">
@@ -191,9 +191,10 @@
                                                             style="width: 40px;height:40px !important;">
                                                             <i class="fa fa-minus text-black-50" aria-hidden="true"></i>
                                                         </button>
-                                                        <input type="number" class="text-center form-control quantity-input"
-                                                            style="width: 50px;height:40px !important;" value="{{ $item['quantity'] }}"
-                                                            name="quantity" min="1">
+                                                        <input type="number"
+                                                            class="text-center form-control quantity-input"
+                                                            style="width: 50px;height:40px !important;"
+                                                            value="{{ $item['quantity'] }}" name="quantity" min="1">
                                                         <button type="button" class="text-center form-control increase-btn"
                                                             style="width: 40px;height:40px !important;">
                                                             <i class="fa fa-plus text-black-50" aria-hidden="true"></i>
@@ -208,9 +209,10 @@
                                             </div>
                                         </div>
                                     </div>
-                    
+
                                     <!-- زر الحذف بجانب العناصر في الشاشات الصغيرة والكبيرة -->
-                                    <div class="col-1 col-md-1 mt-md-0 my-2 d-flex align-items-center justify-content-center">
+                                    <div
+                                        class="col-1 col-md-1 mt-md-0 my-2 d-flex align-items-center justify-content-center">
                                         <form action="{{ route('cart.remove') }}" method="POST">
                                             @csrf
                                             @method('DELETE')
@@ -225,7 +227,7 @@
                             </div>
                         @endforeach
                     </div>
-                    
+
 
                     <!-- Add jQuery code for increase/decrease functionality -->
 
@@ -241,7 +243,7 @@
                         </div>
 
                     </div>
-                    <form action="{{route('send_data')}}"  method="POST"
+                    <form action="{{ route('send_data') }}" method="POST"
                         class="row align-items-center justify-content-center justify-content-lg-start">
                         @csrf
                         <div class="product-options mt-4 rounded bg-white border py-4 px-4">
@@ -282,13 +284,12 @@
                                     <option value="" selected="" disabled="">اختر</option>
                                     <option value="all">كامل</option>
                                     <option value="installment">تقسيط</option>
-                                 @if(get_general_value('tappy_tamara_payment') == 'on')
-                                    <option value="tappy">تابي</option>
-                                    <option value="tamara">تمارا</option>
+                                    @if (get_general_value('tappy_tamara_payment') == 'on')
+                                        <option value="tappy">تابي</option>
+                                        <option value="tamara">تمارا</option>
                                     @endif
-                                    @if(get_general_value('kent_payment') == 'on')
-
-                                    <option value="k-net">كي نت</option>
+                                    @if (get_general_value('kent_payment') == 'on')
+                                        <option value="k-net">كي نت</option>
                                     @endif
                                 </select>
                             </div>
@@ -296,15 +297,15 @@
                             <!-- Total Price -->
                             <div class="form-group mb-3 installment">
                                 <label class="product-option-name required">المجموع الكلي</label>
-                                <input value="{{$totalPrice}}" id="TotalPrice" name="TotalPrice" class="form-control"
-                                    type="number" readonly="">
+                                <input value="{{ $totalPrice }}" id="TotalPrice" name="TotalPrice"
+                                    class="form-control" type="number" readonly="">
                             </div>
 
                             <!-- First Payment -->
                             <div class="form-group mb-3 installment">
                                 <label class="product-option-name required">الدفعة الاولى</label>
-                                <input value="{{get_general_value('batch')}}" min="0" readonly="" id="FirstPayment"
-                                    name="FirstPayment" class="form-control" type="number">
+                                <input value="{{ get_general_value('batch') }}" min="0" readonly=""
+                                    id="FirstPayment" name="FirstPayment" class="form-control" type="number">
                             </div>
 
                             <!-- Installment By -->
@@ -372,7 +373,6 @@
 @endsection
 @section('scripts')
     <script>
-      
         $(document).ready(function() {
             // When the increase button is clicked
             $('.increase-btn').click(function() {
@@ -409,7 +409,7 @@
                 var quantity = form.find('.quantity-input').val();
 
                 $.ajax({
-                    url: '{{ route('cart.update') }}', // Update this route as needed
+                    url: '{{ route('cart.update') }}',
                     method: 'POST',
                     data: {
                         _token: $('meta[name="csrf-token"]').attr('content'),
@@ -422,14 +422,19 @@
                             var currany = "{{ get_general_value('currancy') }}";
 
                             $('.total-price[data-item-key="' + itemKey + '"]').text('المجموع: ' + (
-                                    response.cart[itemKey].price * response.cart[itemKey].quantity
-                                    ) + ' ' + currany);
+                                response.cart[itemKey].price * response.cart[itemKey].quantity
+                            ) + ' ' + currany);
 
-                            // Optionally, update the global total price
+                            // Update global total price
                             $('#floatingTotal').text(response.totalPrice + ' ' + currany);
                             $('.total_price').text(response.totalPrice + ' ' + currany);
+                            $('#TotalPrice').val(response.totalPrice);
 
-
+                            // If installment is selected, update installment calculations
+                            if ($('#installment').val() === 'installment' || $('#installment').val() ===
+                                'k-net') {
+                                updateMonthlyPayment();
+                            }
                         } else {
                             alert('Error updating cart.');
                         }
@@ -463,7 +468,6 @@
             const selectedMonths = parseInt(installmentSelect.value); // القيمة المختارة لعدد الشهور
             const firstPaymentValue = parseFloat(firstPaymentInput.value) || 0; // قيمة الدفعة الأولى
             const totalPriceValue = parseFloat(totalPriceInput.value) || 0; // المجموع الكلي
-
             if (selectedMonths > 0) {
                 const remainingAmount = totalPriceValue - firstPaymentValue; // المبلغ المتبقي بعد الدفعة الأولى
                 if (remainingAmount >= 0) {
@@ -489,6 +493,7 @@
         // عرض الحقول عند اختيار "تقسيط"
         document.getElementById('installment').addEventListener('change', function() {
             const installmentElements = document.querySelectorAll('.installment');
+
             if (this.value === 'installment' || this.value === 'k-net') {
                 installmentElements.forEach(element => {
                     element.style.display = 'block'; // عرض الحقول المرتبطة بالتقسيط
