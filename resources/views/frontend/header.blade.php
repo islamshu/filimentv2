@@ -102,7 +102,7 @@
                             </span> -->
                             </a>
 
-                            <a href="cart.html" class="nav-link position-relative d-md-none p-0" style="width: 30px;height:30px;border-radius:50%;background-color:{{get_general_value('primary_color')}};text-align:center;line-height:15px;display:flex;justify-content:center;align-items:center">
+                            <a href="{{route('cart.index')}}" class="nav-link position-relative d-md-none p-0" style="width: 30px;height:30px;border-radius:50%;background-color:{{get_general_value('primary_color')}};text-align:center;line-height:15px;display:flex;justify-content:center;align-items:center">
                                 <!-- <img  loading="lazy" src="{{asset('front/assets/image/icons/ecommerce-latest.webp')}}" width="35" class="" alt="" /> -->
                                 <i class="fa-solid fa-bag-shopping" style="font-size: 16px;color:white"></i>
                                 <span style="    background-color: {{get_general_value('primary_color')}} 
