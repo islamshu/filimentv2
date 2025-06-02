@@ -4,9 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Models\Comment;
 use App\Models\Product;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
+
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
@@ -16,7 +14,8 @@ use Filament\Forms\Components\Select;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
-
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\DeleteAction;
 class CommentResource extends Resource
 {
     protected static ?string $model = Comment::class;
@@ -72,6 +71,10 @@ class CommentResource extends Resource
                     ->label('المكان')
                     ->formatStateUsing(fn($state) => $state === 'homepage' ? 'الصفحة الرئيسية' : 'المنتجات'),
             ])
+            ->actions([
+            EditAction::make()->label('تعديل'),
+            DeleteAction::make()->label('حذف'),
+        ])
            
             ->defaultSort('created_at', 'desc');
     }

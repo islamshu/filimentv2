@@ -26,7 +26,7 @@
         <div class="my-4">
             <div class="comment">
 
-                @foreach (App\Models\Comment::where('product_id', null)->orderby('id', 'desc')->get() as $item)
+                @foreach (App\Models\Comment::where('page_or_product', 'homepage')->orderby('id', 'desc')->get() as $item)
                     @foreach (App\Models\Comment::where('product_id', null)->orderBy('id', 'desc')->get() as $item)
                         <div class="px-3 mb-4 position-relative">
                             <div class="p-3 border shadow rounded comment-item position-relative">

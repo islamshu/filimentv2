@@ -427,7 +427,7 @@
                 <span
                     style="position: absolute;top:-41px;right:-1px;background-color:#00baf2;color:white;padding:8px 26px;border-top-left-radius:5px;border-top-right-radius:5px;">تقيمات
                     المنتج</span>
-                @foreach (App\Models\Comment::where('product_id', $product->id)->orderBy('id', 'desc')->get() as $item)
+                @foreach (App\Models\Comment::where('page_or_product', 'products')->orderBy('id', 'desc')->get() as $item)
     @php
         $fullStars = floor($item->stars);
         $halfStar = ($item->stars - $fullStars) >= 0.5;
