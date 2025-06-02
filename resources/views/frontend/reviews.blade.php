@@ -1,5 +1,22 @@
 <div class="mt-4 pb-2" style="background-color: #f9fafb;padding-top:60px;">
+    <style>
+        .half-star {
+            display: inline-block;
+            position: relative;
+            color: gold;
+            overflow: hidden;
+            width: 10px;
+            /* نصف الحجم */
+        }
 
+        .half-star::after {
+            content: '☆';
+            position: absolute;
+            left: 0;
+            width: 100%;
+            color: lightgray;
+        }
+    </style>
 
     <div class="container">
         <div class="d-flex align-items-center mb-1">
@@ -9,156 +26,54 @@
         <div class="my-4">
             <div class="comment">
 
-                <div class="px-3">
-                    <div class="p-3 border shadow rounded comment-item">
-                        <div class="quote" style="position: absolute;top:-24px;right:20px">
-                            <i class="fa-solid fa-quote-right fa-2x m-2"></i>
-                        </div>
-                        <div class=" mb-3">
+                @foreach (App\Models\Comment::where('product_id', null)->orderby('id', 'desc')->get() as $item)
+                    @foreach (App\Models\Comment::where('product_id', null)->orderBy('id', 'desc')->get() as $item)
+                        <div class="px-3 mb-4 position-relative">
+                            <div class="p-3 border shadow rounded comment-item position-relative">
+                                {{-- أيقونة الاقتباس --}}
+                                <div class="quote position-absolute" style="top: -24px; right: 20px;">
+                                    <i class="fa-solid fa-quote-right fa-2x m-2"></i>
+                                </div>
 
-                            <div class="text-warning">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-stroke"></i>
+                                {{-- عرض النجوم ديناميكيًا --}}
+                                @php
+                                    $fullStars = floor($item->stars);
+                                    $halfStar = $item->stars - $fullStars >= 0.5;
+                                    $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+                                @endphp
+
+                                <div class="rating-stars" style="font-size: 20px; color: gold;">
+                                    {{-- نجوم كاملة --}}
+                                    @for ($i = 0; $i < $fullStars; $i++)
+                                        <span><i class="fas fa-star"></i></span>
+                                    @endfor
+
+                                    {{-- نصف نجمة باستخدام CSS --}}
+                                    @if ($halfStar)
+                                        <span><i class="fas fa-star-half-stroke"></i></span>
+                                    @endif
+
+                                    {{-- نجوم فارغة --}}
+
+                                </div>
+
+                                {{-- نص التعليق --}}
+                                <div class="mb-4" style="font-size: 14px;">
+                                    {{ $item->comment }}
+                                </div>
+
+                                {{-- اسم الكاتب والصورة --}}
+                                <div class="d-flex align-items-center mt-4 position-absolute" style="bottom: 20px;">
+                                    <img loading="lazy" src="{{ asset('front/assets/image/icons/profile.png') }}"
+                                        class="me-2" width="40" height="40" alt="">
+                                    <h3 class="" style="font-size: 14px;">{{ $item->name }}</h3>
+                                </div>
                             </div>
                         </div>
-                        <div class="mb-4" style="font-size: 14px;">
-                            اشكركم على المصداقيه تم وصول الطلب ونفس الطلب وجوده ممتازه واتمنالكم التوفيق
-                        </div>
-
-                        <div class="d-flex align-items-center mt-4" style="position: absolute; bottom:20px">
-                            <img loading="lazy" src="{{ asset('front/assets/image/icons/profile.png') }}"
-                                class="me-2" width="40" height="40" alt="">
-                            <h3 class="" style="font-size: 14px;">محمد الشمري</h3>
-                        </div>
-                    </div>
-                </div>
+                    @endforeach
+                @endforeach
 
 
-
-
-                <div class="px-3">
-                    <div class="p-3 border shadow rounded comment-item">
-                        <div class="quote" style="position: absolute;top:-24px;right:20px">
-                            <i class="fa-solid fa-quote-right fa-2x m-2"></i>
-                        </div>
-                        <div class=" mb-3">
-
-                            <div class="text-warning">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-stroke"></i>
-                            </div>
-                        </div>
-                        <div class="mb-4" style="font-size: 14px;">
-                            شغل متميز وجبار ♥️ استمروا ♥️
-                        </div>
-
-                        <div class="d-flex align-items-center mt-4" style="position: absolute; bottom:20px">
-                            <img loading="lazy" src="{{ asset('front/assets/image/icons/profile.png') }}"
-                                class="me-2" width="40" height="40" alt="">
-                            <h3 class="" style="font-size: 14px;">عبدالله العنزي</h3>
-                        </div>
-                    </div>
-                </div>
-
-
-
-
-
-                <div class="px-3">
-                    <div class="p-3 border shadow rounded comment-item">
-                        <div class="quote" style="position: absolute;top:-24px;right:20px">
-                            <i class="fa-solid fa-quote-right fa-2x m-2"></i>
-                        </div>
-                        <div class=" mb-3">
-
-                            <div class="text-warning">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-stroke"></i>
-                            </div>
-                        </div>
-                        <div class="mb-4" style="font-size: 14px;">
-                            اهم شي الخدمه بعد البيع .. ابدعتوا بس لو تقللون هال١٤ يوم
-                        </div>
-
-                        <div class="d-flex align-items-center mt-4" style="position: absolute; bottom:20px">
-                            <img loading="lazy" src="{{ asset('front/assets/image/icons/profile.png') }}"
-                                class="me-2" width="40" height="40" alt="">
-                            <h3 class="" style="font-size: 14px;">يوسف محمد</h3>
-                        </div>
-                    </div>
-                </div>
-
-
-
-
-
-                <div class="px-3">
-                    <div class="p-3 border shadow rounded comment-item">
-                        <div class="quote" style="position: absolute;top:-24px;right:20px">
-                            <i class="fa-solid fa-quote-right fa-2x m-2"></i>
-                        </div>
-                        <div class=" mb-3">
-
-                            <div class="text-warning">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-stroke"></i>
-                            </div>
-                        </div>
-                        <div class="mb-4" style="font-size: 14px;">
-                            من جد خيارات اصلية المنتج يفرض نفسه
-                        </div>
-
-                        <div class="d-flex align-items-center mt-4" style="position: absolute; bottom:20px">
-                            <img loading="lazy" src="{{ asset('front/assets/image/icons/profile.png') }}"
-                                class="me-2" width="40" height="40" alt="">
-                            <h3 class="" style="font-size: 14px;">هنادي عبدالله</h3>
-                        </div>
-                    </div>
-                </div>
-
-
-
-
-
-
-                <div class="px-3">
-                    <div class="p-3 border shadow rounded comment-item">
-                        <div class="quote" style="position: absolute;top:-24px;right:20px">
-                            <i class="fa-solid fa-quote-right fa-2x m-2"></i>
-                        </div>
-                        <div class=" mb-3">
-
-                            <div class="text-warning">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-stroke"></i>
-                            </div>
-                        </div>
-                        <div class="mb-4" style="font-size: 14px;">
-                            هذه ثالث تجربه .. خدمتهم صراحه تسسكت اهنيكم
-                        </div>
-
-                        <div class="d-flex align-items-center mt-4" style="position: absolute; bottom:20px">
-                            <img loading="lazy" src="{{ asset('front/assets/image/icons/profile.png') }}"
-                                class="me-2" width="40" height="40" alt="">
-                            <h3 class="" style="font-size: 14px;">احمد العتيبي</h3>
-                        </div>
-                    </div>
-                </div>
 
             </div>
 

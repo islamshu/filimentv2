@@ -427,154 +427,60 @@
                 <span
                     style="position: absolute;top:-41px;right:-1px;background-color:#00baf2;color:white;padding:8px 26px;border-top-left-radius:5px;border-top-right-radius:5px;">تقيمات
                     المنتج</span>
-                <div class="product-comment mb-3 pb-4">
-                    <div class="row">
-                        <div class="col-10 d-flex text-start">
-                            <img src=" {{ asset('front/assets/image/icons/profile.png') }}" width="50"
-                                height="50" alt="">
-                            <div class="d-flex flex-column ms-2">
-                                <div class="">
-                                    <span class="mb-3 fw-bold">حسن اليامي</span>
-                                    <span class="ms-4"><i class="fa-solid fa-check"
-                                            style="width: 25px;height:25px;border-radius:50%;background-color:gold;text-align:center;line-height:15px;padding-top:5px;"></i>
-                                        قام بالشراء,
-                                        تم التقييم</span>
-                                </div>
-                                <div class="d-flex mb-3">
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                </div>
-                                <p class="text-body" style="font-size: 14px;">كل شي فيه حلو</p>
-                            </div>
+                @foreach (App\Models\Comment::where('product_id', $product->id)->orderBy('id', 'desc')->get() as $item)
+    @php
+        $fullStars = floor($item->stars);
+        $halfStar = ($item->stars - $fullStars) >= 0.5;
+        $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+    @endphp
 
-                        </div>
-
-                        <div class="col-2">
-                            <span class="text-body" style="font-size: 13px;">منذ 1 أيام</span>
-                        </div>
+    <div class="product-comment mb-3 pb-4">
+        <div class="row">
+            <div class="col-10 d-flex text-start">
+                <img src="{{ asset('front/assets/image/icons/profile.png') }}" width="50" height="50" alt="">
+                <div class="d-flex flex-column ms-2">
+                    <div class="mb-1">
+                        <span class="fw-bold">{{ $item->name }}</span>
+                        <span class="ms-3">
+                            <i class="fa fa-check"
+                                style="width: 25px; height: 25px; border-radius: 50%; background-color: gold; text-align: center; line-height: 15px; padding-top: 5px;"></i>
+                            قام بالشراء, تم التقييم
+                        </span>
                     </div>
 
-                    <hr class="ps-2 pe-2">
+                    {{-- عرض النجوم --}}
+                    <div class="d-flex mb-2">
+                        @for ($i = 0; $i < $fullStars; $i++)
+                            <i class="fa fa-star" style="color: gold;"></i>
+                        @endfor
 
-                </div>
+                        @if ($halfStar)
+                            <i class="fa fa-star-half-o" style="color: gold;"></i>
+                        @endif
 
-
-                <div class="product-comment mb-3 pb-4">
-                    <div class="row">
-                        <div class="col-10 d-flex text-start">
-                            <img src=" {{ asset('front/assets/image/icons/profile.png') }}" width="50"
-                                height="50" alt="">
-                            <div class="d-flex flex-column ms-2">
-                                <div class="d-flex">
-                                    <span class="mb-3 fw-bold">فيصل صالح المالكي
-                                    </span>
-                                    <span class="ms-4"><i class="fa-solid fa-check"
-                                            style="width: 25px;height:25px;border-radius:50%;background-color:gold;text-align:center;line-height:15px;padding-top:5px;"></i>
-                                        قام بالشراء,
-                                        تم التقييم</span>
-                                </div>
-                                <div class="d-flex mb-3">
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                </div>
-                                <p class="text-body" style="font-size: 14px;">المنتج ممتاز واصلي وتوصيلهم ماشاء الله
-                                    بالضبط اخذ تقريبا 40 ساعة وهو عندي ماشاء الله</p>
-                            </div>
-
-                        </div>
-
-                        <div class="col-2">
-                            <span class="text-body" style="font-size: 13px;">منذ 1 أيام</span>
-                        </div>
+                        @for ($i = 0; $i < $emptyStars; $i++)
+                            <i class="fa fa-star-o" style="color: gold;"></i>
+                        @endfor
                     </div>
 
-                    <hr class="ps-2 pe-2">
-
+                    <p class="text-body" style="font-size: 14px;">{{ $item->comment }}</p>
                 </div>
+            </div>
+
+            <div class="col-2 text-end">
+                <span class="text-body" style="font-size: 13px;">
+                    {{ $item->created_at->diffForHumans() }}
+                </span>
+            </div>
+        </div>
+
+        <hr class="ps-2 pe-2">
+    </div>
+@endforeach
 
 
-                <div class="product-comment mb-3 pb-4">
-                    <div class="row">
-                        <div class="col-10 d-flex text-start">
-                            <img src=" {{ asset('front/assets/image/icons/profile.png') }}" width="50"
-                                height="50" alt="">
-                            <div class="d-flex flex-column ms-2">
-                                <div class="d-flex">
-                                    <span class="mb-3 fw-bold">مها عبدالله
-                                    </span>
 
-                                    <span class="ms-4"><i class="fa-solid fa-check"
-                                            style="width: 25px;height:25px;border-radius:50%;background-color:gold;text-align:center;line-height:15px;padding-top:5px;"></i>
-                                        قام بالشراء,
-                                        تم التقييم</span>
-                                </div>
-                                <div class="d-flex mb-3">
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                </div>
-                                <p class="text-body" style="font-size: 14px;">مرة حلو
-
-                                </p>
-                            </div>
-
-                        </div>
-
-                        <div class="col-2">
-                            <span class="text-body" style="font-size: 13px;">منذ 2 أيام</span>
-                        </div>
-                    </div>
-
-                    <hr class="ps-2 pe-2">
-
-                </div>
-
-
-                <div class="product-comment mb-3 pb-4">
-                    <div class="row">
-                        <div class="col-10 d-flex text-start">
-                            <img src=" {{ asset('front/assets/image/icons/profile.png') }}" width="50"
-                                height="50" alt="">
-                            <div class="d-flex flex-column ms-2">
-                                <div class="d-flex">
-                                    <span class="mb-3 fw-bold">بداح القارح
-                                    </span>
-
-                                    <span class=" ms-4"><i class="fa-solid fa-check"
-                                            style="width: 25px;height:25px;border-radius:50%;background-color:gold;text-align:center;line-height:15px;padding-top:5px;"></i>
-                                        قام بالشراء,
-                                        تم التقييم</span>
-                                </div>
-                                <div class="d-flex mb-3">
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>
-                                    <i class="fa-solid fa-star" style="color: gold;"></i>-
-                                </div>
-                                <p class="text-body" style="font-size: 14px;">من افضل المتاجر اللي تعاملت معاها
-
-                                </p>
-                            </div>
-
-                        </div>
-
-                        <div class="col-2">
-                            <span class="text-body" style="font-size: 13px;">منذ 2 أيام</span>
-                        </div>
-                    </div>
-
-                    <hr class="ps-2 pe-2">
-
-                </div>
+               
 
 
 

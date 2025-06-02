@@ -19,8 +19,10 @@ class CartController extends Controller
         foreach ($cart as $item) {
             $totalPrice += $item['price'] * $item['quantity'];
         }
-
-
+        if (url()->current() == 'https://digitalzone-qa.store/') {
+            // الكود الذي تريد تنفيذه إذا كان رابط الموقع هو https://example.com
+            return view('frontend.edit_cart', compact('cart', 'totalPrice'));
+        }
         // Return the cart view with cart items and total price
         return view('frontend.cart', compact('cart', 'totalPrice'));
     }
@@ -28,10 +30,10 @@ class CartController extends Controller
     {
         // Assuming $product is the product object you want to add
         $product = Product::find($request->product_id);
-    
+
         // Get the current cart from the session, or an empty array if not set
         $cart = session()->get('cart', []);
-    
+
         // Check if the product already exists in the cart
         if (isset($cart[$product->id])) {
             // If it exists, increase the quantity by 1
@@ -45,13 +47,13 @@ class CartController extends Controller
                 'id' => $product->id,
             ];
         }
-    
+
         // Update the cart in the session
         session()->put('cart', $cart);
-    
+
         return redirect()->back()->with('success_add', 'تم إضافة المنتج إلى السلة!');
     }
-    
+
     public function remove(Request $request)
     {
         // Retrieve the itemKey (product ID) from the request
@@ -99,10 +101,10 @@ class CartController extends Controller
         ]);
 
         // Calculate monthly payment
-        $monthlyPayment = ($request->InstallmentBy > 0) 
-            ? ($request->TotalPrice - $request->FirstPayment) / $request->InstallmentBy 
+        $monthlyPayment = ($request->InstallmentBy > 0)
+            ? ($request->TotalPrice - $request->FirstPayment) / $request->InstallmentBy
             : 0;
-            
+
         session(["monthly_payment" => $monthlyPayment]);
 
         // Redirect based on payment method
@@ -150,12 +152,13 @@ class CartController extends Controller
             'cart' => $cart,
         ]);
     }
-    public function pay(Request $request){
+    public function pay(Request $request)
+    {
 
         $cart = session()->get('cart', []);
         $productCount = array_sum(array_column($cart, 'quantity'));
-        $payment_method = session()->get('payment_method', ''); 
-        $monthly_payment = session()->get('monthly_payment', 0);    
+        $payment_method = session()->get('payment_method', '');
+        $monthly_payment = session()->get('monthly_payment', 0);
         $first_payment = session()->get('first_payment', 0);
         $installment_by = session()->get('installment_by', 0);
         $totalPrice = session()->get('totalPrice', 0);
@@ -164,10 +167,7 @@ class CartController extends Controller
         foreach ($cart as $item) {
             $totalPrice += $item['price'] * $item['quantity'];
         }
-        return view('frontend.pay', compact( 'totalPrice', 'cart', 'payment_method', 'monthly_payment', 'first_payment', 'installment_by', 'productCount'));
+        return view('frontend.pay', compact('totalPrice', 'cart', 'payment_method', 'monthly_payment', 'first_payment', 'installment_by', 'productCount'));
     }
-    public function send_pay(Request $request){
-        
-    }
-
+    public function send_pay(Request $request) {}
 }
