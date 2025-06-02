@@ -19,7 +19,8 @@ class CartController extends Controller
         foreach ($cart as $item) {
             $totalPrice += $item['price'] * $item['quantity'];
         }
-        if (url()->current() == 'https://digitalzone-qa.store/') {
+        if (url()->current() == 'https://digitalzone-qa.store') {
+            dd('f');
             // الكود الذي تريد تنفيذه إذا كان رابط الموقع هو https://example.com
             return view('frontend.edit_cart', compact('cart', 'totalPrice'));
         }

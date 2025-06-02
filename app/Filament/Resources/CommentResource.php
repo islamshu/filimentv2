@@ -4,12 +4,17 @@ namespace App\Filament\Resources;
 
 use App\Models\Comment;
 use App\Models\Product;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Select;
+use Filament\Tables\Actions\BulkActionGroup;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 
 class CommentResource extends Resource
@@ -43,17 +48,13 @@ class CommentResource extends Resource
                     ->rows(4)
                     ->required(),
 
-                Select::make('product_id')
-                    ->label('المنتج أو الصفحة الرئيسية')
-                    ->options(function () {
-                        return [
-                            '' => 'الصفحة الرئيسية',
-                        ] + Product::all()->pluck('name', 'id')->mapWithKeys(function ($name, $id) {
-                            return [$id => "$name (ID: $id)"];
-                        })->toArray();
-                    })
-                    ->searchable()
-                    ->nullable(),
+                Select::make('page_or_product')
+                    ->label('الصفحة أو المنتج')
+                    ->options([
+                        'homepage' => 'الصفحة الرئيسية',
+                        'products' => 'منتجات',
+                    ])
+                    ->required(),
             ]);
     }
 
@@ -67,15 +68,11 @@ class CommentResource extends Resource
                     ->formatStateUsing(fn($state) => number_format($state, 1))
                     ->sortable(),
                 TextColumn::make('comment')->label('التعليق')->limit(40),
-                TextColumn::make('product.name')
-                    ->label('المنتج / الصفحة')
-                    ->formatStateUsing(function ($state, $record) {
-                        if (!$record->product) {
-                            return 'الصفحة الرئيسية';
-                        }
-                        return $record->product->name . ' (' . $record->product->id . ')';
-                    }),
+                TextColumn::make('page_or_product')
+                    ->label('المكان')
+                    ->formatStateUsing(fn($state) => $state === 'homepage' ? 'الصفحة الرئيسية' : 'المنتجات'),
             ])
+           
             ->defaultSort('created_at', 'desc');
     }
 
