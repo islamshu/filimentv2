@@ -155,15 +155,7 @@
 
 
             <div class="">
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+
                 <div class="row my-2">
                     <div class="col-md-12 my-2">
                         @foreach ($cart as $item)
@@ -310,38 +302,11 @@
                             </div>
 
                             <!-- First Payment -->
-                            @php
-                                $isCustom = get_general_value('custom_payment_enabled');
-                                $isMultiple = get_general_value('multiple_payments_enabled');
-                                $multiple_payments = json_decode(get_general_value('multiple_payments') ?? '[]', true);
-                                $default_batch = get_general_value('batch');
-                            @endphp
-
                             <div class="form-group mb-3 installment">
-                                <label class="product-option-name required">الدفعة الأولى</label>
-
-                                @if ($isCustom)
-                                    <!-- دفعة مخصصة -->
-                                    <input value="{{ $default_batch }}" min="0" readonly id="FirstPayment"
-                                        name="FirstPayment" class="form-control" type="number">
-                                @elseif ($isMultiple && count($multiple_payments) > 0)
-                                    <!-- دفعات متعددة -->
-                                    <select id="FirstPayment" name="FirstPayment" class="form-control">
-                                        <option value="">اختر قيمة الدفعة</option>
-                                        @foreach ($multiple_payments as $payment)
-                                            <option value="{{ $payment }}">{{ $payment }} ريال</option>
-                                        @endforeach
-                                    </select>
-
-                                    <!-- حقل مخفي لتحديث قيمة الدفعة تلقائيًا عند الاختيار -->
-                                    <input type="hidden" id="FirstPayment" name="FirstPayment" value="">
-                                @else
-                                    <p class="text-danger">لم يتم تفعيل نظام دفعات صالح.</p>
-                                @endif
+                                <label class="product-option-name required">الدفعة الاولى</label>
+                                <input value="{{ get_general_value('batch') }}" min="0" readonly=""
+                                    id="FirstPayment" name="FirstPayment" class="form-control" type="number">
                             </div>
-
-
-
 
                             <!-- Installment By -->
                             <div class="form-group mb-3 installment">
@@ -543,21 +508,4 @@
             }
         });
     </script>
-    @if ($isMultiple)
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                const select = document.getElementById('FirstPayment');
-                const hiddenInput = document.getElementById('FirstPayment');
-
-                if (select) {
-                    select.addEventListener('change', function() {
-                        hiddenInput.value = this.value;
-
-                        // يمكنك تنفيذ كود إضافي هنا لتحديث السعر أو العرض حسب الدفعة المحددة
-                        console.log('تم اختيار دفعة:', this.value);
-                    });
-                }
-            });
-        </script>
-    @endif
 @endsection
