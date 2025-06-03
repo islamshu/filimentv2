@@ -1,62 +1,63 @@
 <x-filament-panels::page>
     <style>
         /* Toggle Switch بنفس أسلوب الصفحة */
-.switch {
-    position: relative;
-    display: inline-block;
-    width: 50px;
-    height: 24px;
-}
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
 
-.switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
 
-.slider {
-    position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #ccc;
-    transition: .4s;
-    border-radius: 24px;
-}
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
 
-.slider:before {
-    position: absolute;
-    content: "";
-    height: 16px;
-    width: 16px;
-    left: 4px;
-    bottom: 4px;
-    background-color: white;
-    transition: .4s;
-    border-radius: 50%;
-}
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
 
-input:checked + .slider {
-    background-color: #00baf2;
-}
+        input:checked+.slider {
+            background-color: #00baf2;
+        }
 
-input:checked + .slider:before {
-    transform: translateX(26px);
-}
+        input:checked+.slider:before {
+            transform: translateX(26px);
+        }
 
-/* تصميم متجاوب للأجهزة المحمولة */
-@media (max-width: 570px) {
-    .switch {
-        width: 45px;
-        height: 22px;
-    }
-    .slider:before {
-        height: 14px;
-        width: 14px;
-    }
-}
+        /* تصميم متجاوب للأجهزة المحمولة */
+        @media (max-width: 570px) {
+            .switch {
+                width: 45px;
+                height: 22px;
+            }
+
+            .slider:before {
+                height: 14px;
+                width: 14px;
+            }
+        }
     </style>
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden">
@@ -330,9 +331,9 @@ input:checked + .slider:before {
                                 </option>
                                 <option value="د.ك"@if (get_general_value('currancy') == 'د.ك') selected @endif>دينار كويتي
                                 </option>
-                                <option value="ر.ق"@if (get_general_value('currancy') == 'ر.ق') selected @endif>ريال قطري 
+                                <option value="ر.ق"@if (get_general_value('currancy') == 'ر.ق') selected @endif>ريال قطري
                                 </option>
-                                  <option value="د.ب"@if (get_general_value('currancy') == 'د.ب') selected @endif>دينار بحريني  
+                                <option value="د.ب"@if (get_general_value('currancy') == 'د.ب') selected @endif>دينار بحريني
                                 </option>
                             </select>
 
@@ -343,7 +344,7 @@ input:checked + .slider:before {
 
 
                     <!-- الدفعة -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                    {{-- <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label for="batch" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
                             ٌقيمة الدفعة الاولى
 
@@ -353,6 +354,101 @@ input:checked + .slider:before {
                                 value="{{ get_general_value('batch') ?? old('general.batch') }}"
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                                 placeholder="أدخل الدفعة الاولى">
+                        </div>
+                    </div> --}}
+                    <!-- خيارات الدفع -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                        <label class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
+                            خيارات نظام الدفع
+                        </label>
+                        <div class="md:col-span-2 space-y-6">
+                            <!-- خيار الدفعة المخصصة -->
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        تفعيل الدفعة المخصصة
+                                    </label>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        تحديد قيمة واحدة للدفعة الأولى
+                                    </p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" name="general[custom_payment_enabled]" value="1"
+                                        @if (get_general_value('custom_payment_enabled')) checked @endif id="customPaymentToggle">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
+                            <!-- حقل الدفعة المخصصة (يظهر عند التفعيل) -->
+                            <div id="customPaymentField"
+                                class="@if (!get_general_value('custom_payment_enabled')) hidden @endif pl-4 pr-2">
+                                <label for="batch"
+                                    class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    قيمة الدفعة المخصصة
+                                </label>
+                                <input type="text" id="batch" name="general[batch]"
+                                    value="{{ get_general_value('batch') ?? old('general.batch') }}"
+                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                                    placeholder="أدخل قيمة الدفعة الأولى">
+                            </div>
+
+                            <!-- خيار الدفعات المتعددة -->
+                            <div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                                <div>
+                                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                        تفعيل الدفعات المتعددة
+                                    </label>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                        إمكانية تحديد عدة قيم للدفعات
+                                    </p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" name="general[multiple_payments_enabled]" value="1"
+                                        @if (get_general_value('multiple_payments_enabled')) checked @endif id="multiplePaymentsToggle">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+
+                            <!-- حقول الدفعات المتعددة (تظهر عند التفعيل) -->
+                            <div id="multiplePaymentsFields"
+                                class="@if (!get_general_value('multiple_payments_enabled')) hidden @endif space-y-3 pl-4 pr-2">
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    قيم الدفعات المتعددة
+                                </label>
+
+                                <div id="paymentsContainer">
+                                    @php
+                                        $multiple_payments =
+                                            json_decode(get_general_value('multiple_payments') ?? '[]', true) ?? [];
+                                    @endphp
+
+                                    @if (count($multiple_payments) > 0)
+                                        @foreach ($multiple_payments as $index => $payment)
+                                            <div class="flex gap-2 payment-input mb-2">
+                                                <input type="text" name="multiple_payments[]"
+                                                    value="{{ $payment }}"
+                                                    class="flex-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                                                    placeholder="قيمة الدفعة">
+                                                @if ($index > 0)
+                                                    <button type="button"
+                                                        class="remove-payment-btn px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition">حذف</button>
+                                                @endif
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <div class="flex gap-2 payment-input mb-2">
+                                            <input type="text" name="multiple_payments[]"
+                                                class="flex-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                                                placeholder="قيمة الدفعة">
+                                        </div>
+                                    @endif
+                                </div>
+
+                                <button type="button" id="addPaymentBtn"
+                                    class="px-4 py-2 bg-primary-600 text-white rounded-md text-sm hover:bg-primary-700 transition">
+                                    + إضافة دفعة أخرى
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -368,8 +464,8 @@ input:checked + .slider:before {
                                 placeholder="أدخل الرقم الضريبي">
                         </div>
                     </div>
-                    <div class="d-flex align-items-center justify-content-between p-3 rounded"  >
-                    
+                    <div class="d-flex align-items-center justify-content-between p-3 rounded">
+
                         <input type="hidden" name="general[kent_payment]" value="off">
 
                         <!-- Visible checkbox -->
@@ -378,29 +474,27 @@ input:checked + .slider:before {
                         </label>
                         <label class="switch md:col-span-2">
                             <input type="checkbox" name="general[kent_payment]" value="on"
-                                @if(get_general_value('kent_payment') == 'on') checked @endif
-                               >
+                                @if (get_general_value('kent_payment') == 'on') checked @endif>
                             <span class="slider round"></span>
                         </label>
-               </div>
-               <div class="d-flex align-items-center justify-content-between p-3 rounded"  >
-                    
-                <input type="hidden" name="general[tappy_tamara_payment]" value="off">
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between p-3 rounded">
 
-                <!-- Visible checkbox -->
-                <label for="daman_text" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
-                    تقسيط تابي و تمارة 
-                </label>
-                <label class="switch md:col-span-2">
-                    <input type="checkbox" name="general[tappy_tamara_payment]" value="on"
-                        @if(get_general_value('tappy_tamara_payment') == 'on') checked @endif
-                       >
-                    <span class="slider round"></span>
-                </label>
-       </div>
+                        <input type="hidden" name="general[tappy_tamara_payment]" value="off">
+
+                        <!-- Visible checkbox -->
+                        <label for="daman_text" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
+                            تقسيط تابي و تمارة
+                        </label>
+                        <label class="switch md:col-span-2">
+                            <input type="checkbox" name="general[tappy_tamara_payment]" value="on"
+                                @if (get_general_value('tappy_tamara_payment') == 'on') checked @endif>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label for="daman_text" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
-                         نص الضمان
+                            نص الضمان
                         </label>
                         <div class="md:col-span-2">
                             <input type="text" id="daman_text" name="general[daman_text]"
@@ -440,4 +534,68 @@ input:checked + .slider:before {
             }
         });
     </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const customPaymentToggle = document.getElementById('customPaymentToggle');
+        const multiplePaymentsToggle = document.getElementById('multiplePaymentsToggle');
+        const customPaymentField = document.getElementById('customPaymentField');
+        const multiplePaymentsFields = document.getElementById('multiplePaymentsFields');
+        const paymentsContainer = document.getElementById('paymentsContainer');
+        const addPaymentBtn = document.getElementById('addPaymentBtn');
+
+        function toggleCustomPayment(enabled) {
+            customPaymentToggle.checked = enabled;
+            customPaymentField.classList.toggle('hidden', !enabled);
+            if (enabled) {
+                // Disable multiple payments
+                multiplePaymentsToggle.checked = false;
+                multiplePaymentsFields.classList.add('hidden');
+            }
+        }
+
+        function toggleMultiplePayments(enabled) {
+            multiplePaymentsToggle.checked = enabled;
+            multiplePaymentsFields.classList.toggle('hidden', !enabled);
+            if (enabled) {
+                // Disable custom payment
+                customPaymentToggle.checked = false;
+                customPaymentField.classList.add('hidden');
+            }
+        }
+
+        // أحداث التبديل بين الخيارين
+        customPaymentToggle.addEventListener('change', function () {
+            toggleCustomPayment(this.checked);
+        });
+
+        multiplePaymentsToggle.addEventListener('change', function () {
+            toggleMultiplePayments(this.checked);
+        });
+
+        // إضافة دفعة جديدة
+        if (addPaymentBtn) {
+            addPaymentBtn.addEventListener('click', function () {
+                const newInputDiv = document.createElement('div');
+                newInputDiv.className = 'flex gap-2 payment-input mb-2';
+                newInputDiv.innerHTML = `
+                    <input type="text" name="multiple_payments[]" 
+                           class="flex-1 rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500"
+                           placeholder="قيمة الدفعة" required>
+                    <button type="button" class="remove-payment-btn px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition">حذف</button>
+                `;
+                paymentsContainer.appendChild(newInputDiv);
+            });
+        }
+
+        // حذف دفعة
+        if (paymentsContainer) {
+            paymentsContainer.addEventListener('click', function (e) {
+                if (e.target.classList.contains('remove-payment-btn')) {
+                    e.target.closest('.payment-input').remove();
+                }
+            });
+        }
+    });
+</script>
+
 </x-filament-panels::page>
