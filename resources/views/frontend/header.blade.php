@@ -23,8 +23,7 @@
                     </div>
 
                     <div class="col-7 col-lg-4 d-flex ">
-                        <span style="font-size: 14px;" class="fs-sm">عميلنا العزيز يوجد كابون خصم 10٪ + توصيل
-                            مجاني</span>
+                        
                     </div>
 
                     <div class="col-3 col-lg-4">
