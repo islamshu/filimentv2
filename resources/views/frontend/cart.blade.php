@@ -302,11 +302,38 @@
                             </div>
 
                             <!-- First Payment -->
-                            <div class="form-group mb-3 installment">
-                                <label class="product-option-name required">الدفعة الاولى</label>
-                                <input value="{{ get_general_value('batch') }}" min="0" readonly=""
-                                    id="FirstPayment" name="FirstPayment" class="form-control" type="number">
-                            </div>
+                            @php
+    $isCustom = get_general_value('custom_payment_enabled');
+    $isMultiple = get_general_value('multiple_payments_enabled');
+    $multiple_payments = json_decode(get_general_value('multiple_payments') ?? '[]', true);
+    $default_batch = get_general_value('batch');
+@endphp
+
+<div class="form-group mb-3 installment">
+    <label class="product-option-name required">الدفعة الأولى</label>
+
+    @if ($isCustom)
+        <!-- دفعة مخصصة -->
+        <input value="{{ $default_batch }}" min="0" readonly
+            id="FirstPayment" name="FirstPayment" class="form-control" type="number">
+    @elseif ($isMultiple && count($multiple_payments) > 0)
+        <!-- دفعات متعددة -->
+        <select id="FirstPaymentSelect" name="FirstPayment" class="form-control">
+            <option value="">اختر قيمة الدفعة</option>
+            @foreach ($multiple_payments as $payment)
+                <option value="{{ $payment }}">{{ $payment }} </option>
+            @endforeach
+        </select>
+
+        <!-- حقل مخفي لتحديث قيمة الدفعة تلقائيًا عند الاختيار -->
+        <input type="hidden" id="FirstPayment" name="FirstPayment" value="">
+    @else
+        <p class="text-danger">لم يتم تفعيل نظام دفعات صالح.</p>
+    @endif
+</div>
+
+
+
 
                             <!-- Installment By -->
                             <div class="form-group mb-3 installment">
@@ -380,8 +407,6 @@
                 var quantityInput = form.find('.quantity-input');
                 var quantity = parseInt(quantityInput.val());
                 quantityInput.val(quantity + 1);
-
-                // Update the cart with the new quantity
                 updateCartQuantity(form);
             });
 
@@ -393,7 +418,6 @@
 
                 if (quantity > 1) {
                     quantityInput.val(quantity - 1);
-                    // Update the cart with the new quantity
                     updateCartQuantity(form);
                 }
             });
@@ -418,93 +442,92 @@
                     },
                     success: function(response) {
                         if (response.status === 'success') {
-                            // Update the total price in the UI
                             var currany = "{{ get_general_value('currancy') }}";
-
                             $('.total-price[data-item-key="' + itemKey + '"]').text('المجموع: ' + (
                                 response.cart[itemKey].price * response.cart[itemKey].quantity
                             ) + ' ' + currany);
 
-                            // Update global total price
                             $('#floatingTotal').text(response.totalPrice + ' ' + currany);
                             $('.total_price').text(response.totalPrice + ' ' + currany);
                             $('#TotalPrice').val(response.totalPrice);
 
-                            // If installment is selected, update installment calculations
-                            if ($('#installment').val() === 'installment' || $('#installment').val() ===
-                                'k-net') {
+                            if ($('#installment').val() === 'installment' || $('#installment').val() === 'k-net') {
                                 updateMonthlyPayment();
                             }
-                        } else {
-                            alert('Error updating cart.');
                         }
-                    },
-                    error: function() {
-                        alert('Error updating cart');
                     }
                 });
             }
-        });
-        document.getElementById('installment').addEventListener('change', function() {
-            const installmentElements = document.querySelectorAll('.installment');
-            if (this.value == 'installment' || this.value == 'k-net') {
-                installmentElements.forEach(element => {
-                    element.style.display = 'block'; // Hide all elements with class 'installment'
-                });
-            } else {
-                installmentElements.forEach(element => {
-                    element.style.display = 'none'; // Show them if the condition is not met
-                });
-            }
-        });
-        const installmentSelect = document.getElementById('InstallmentBy');
-        const firstPaymentInput = document.getElementById('FirstPayment');
-        const monthlyPaymentInput = document.getElementById('MonthlyPayment');
-        const monthlyPaymentLi = document.getElementById('MonthlyPaymentLi');
-        const totalPriceInput = document.getElementById('TotalPrice');
 
-        // دالة لحساب القسط الشهري
-        function updateMonthlyPayment() {
-            const selectedMonths = parseInt(installmentSelect.value); // القيمة المختارة لعدد الشهور
-            const firstPaymentValue = parseFloat(firstPaymentInput.value) || 0; // قيمة الدفعة الأولى
-            const totalPriceValue = parseFloat(totalPriceInput.value) || 0; // المجموع الكلي
-            if (selectedMonths > 0) {
-                const remainingAmount = totalPriceValue - firstPaymentValue; // المبلغ المتبقي بعد الدفعة الأولى
-                if (remainingAmount >= 0) {
-                    const monthlyPayment = (remainingAmount / selectedMonths).toFixed(2); // حساب القسط الشهري
-                    monthlyPaymentLi.style.display = 'block'; // عرض حقل الدفعة الشهرية
-                    monthlyPaymentInput.value = monthlyPayment; // تحديث قيمة القسط الشهري
+            // Installment calculation logic
+            document.getElementById('installment').addEventListener('change', function() {
+                const installmentElements = document.querySelectorAll('.installment');
+                if (this.value == 'installment' || this.value == 'k-net') {
+                    installmentElements.forEach(element => {
+                        element.style.display = 'block';
+                    });
+                    updateMonthlyPayment();
                 } else {
-                    alert("الدفعة الأولى أكبر من المجموع الكلي!"); // تحذير عند تجاوز الدفعة الأولى للمجموع
-                    firstPaymentInput.value = totalPriceValue; // إعادة الدفعة الأولى إلى الحد الأقصى
+                    installmentElements.forEach(element => {
+                        element.style.display = 'none';
+                    });
                     monthlyPaymentLi.style.display = 'none';
                     monthlyPaymentInput.value = 0;
                 }
-            } else {
-                monthlyPaymentLi.style.display = 'none'; // إخفاء حقل الدفعة الشهرية إذا لم يتم اختيار عدد الأشهر
-                monthlyPaymentInput.value = 0;
+            });
+
+            const installmentSelect = document.getElementById('InstallmentBy');
+            const firstPaymentInput = document.getElementById('FirstPayment');
+            const monthlyPaymentInput = document.getElementById('MonthlyPayment');
+            const monthlyPaymentLi = document.getElementById('MonthlyPaymentLi');
+            const totalPriceInput = document.getElementById('TotalPrice');
+            const firstPaymentSelect = document.getElementById('FirstPaymentSelect');
+
+            function updateMonthlyPayment() {
+                const selectedMonths = parseInt(installmentSelect.value);
+                let firstPaymentValue = 0;
+                
+                // Get first payment value based on input type
+                if (firstPaymentSelect) {
+                    firstPaymentValue = parseFloat(firstPaymentSelect.value) || 0;
+                } else {
+                    firstPaymentValue = parseFloat(firstPaymentInput.value) || 0;
+                }
+                
+                const totalPriceValue = parseFloat(totalPriceInput.value) || 0;
+
+                if (selectedMonths > 0) {
+                    const remainingAmount = totalPriceValue - firstPaymentValue;
+                    
+                    if (remainingAmount >= 0) {
+                        const monthlyPayment = (remainingAmount / selectedMonths).toFixed(2);
+                        monthlyPaymentLi.style.display = 'block';
+                        monthlyPaymentInput.value = monthlyPayment;
+                    } else {
+                        alert("الدفعة الأولى أكبر من المجموع الكلي!");
+                        if (firstPaymentSelect) {
+                            firstPaymentSelect.value = "";
+                        }
+                        firstPaymentInput.value = 0;
+                        monthlyPaymentLi.style.display = 'none';
+                        monthlyPaymentInput.value = 0;
+                    }
+                }
             }
-        }
 
-        // إضافة أحداث عند تغيير القيم
-        installmentSelect.addEventListener('change', updateMonthlyPayment);
-        firstPaymentInput.addEventListener('input', updateMonthlyPayment);
+            // Event listeners for installment calculation
+            installmentSelect.addEventListener('change', updateMonthlyPayment);
+            firstPaymentInput.addEventListener('input', updateMonthlyPayment);
 
-        // عرض الحقول عند اختيار "تقسيط"
-        document.getElementById('installment').addEventListener('change', function() {
-            const installmentElements = document.querySelectorAll('.installment');
-
-            if (this.value === 'installment' || this.value === 'k-net') {
-                installmentElements.forEach(element => {
-                    element.style.display = 'block'; // عرض الحقول المرتبطة بالتقسيط
+            // If multiple payments select exists
+            if (firstPaymentSelect) {
+                firstPaymentSelect.addEventListener('change', function() {
+                    // Update the hidden input value
+                    firstPaymentInput.value = this.value;
+                    
+                    // Calculate monthly payment
+                    updateMonthlyPayment();
                 });
-                updateMonthlyPayment(); // تحديث القسط الشهري مباشرة
-            } else {
-                installmentElements.forEach(element => {
-                    element.style.display = 'none'; // إخفاء الحقول إذا تم اختيار طريقة دفع أخرى
-                });
-                monthlyPaymentLi.style.display = 'none';
-                monthlyPaymentInput.value = 0;
             }
         });
     </script>
