@@ -167,11 +167,6 @@
                         </div>
                     </div>
 
-
-
-                    <!-- سكربت المعاينة -->
-
-
                     <!-- Colors -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label for="primary_color" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
@@ -233,7 +228,6 @@
                         </div>
                     </div>
 
-                    <!-- باقي روابط السوشيال ميديا بنفس الطريقة -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label for="twitter" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
                             تويتر
@@ -246,7 +240,6 @@
                         </div>
                     </div>
 
-                    <!-- WhatsApp -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label for="whatsapp" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
                             واتساب
@@ -259,7 +252,6 @@
                         </div>
                     </div>
 
-                    <!-- Instagram -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label for="instagram" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
                             انستغرام
@@ -272,7 +264,6 @@
                         </div>
                     </div>
 
-                    <!-- YouTube -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label for="youtube" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
                             يوتيوب
@@ -285,7 +276,6 @@
                         </div>
                     </div>
 
-                    <!-- Snapchat -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label for="snapchat" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
                             سناب شات
@@ -298,7 +288,6 @@
                         </div>
                     </div>
 
-                    <!-- TikTok -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label for="tiktok" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
                             تيك توك
@@ -321,41 +310,17 @@
                                 class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500"
                                 id="">
                                 <option value="" selected disabled>اختر</option>
-                                <option value="ر.س" @if (get_general_value('currancy') == 'ر.س') selected @endif>ريال سعودي
-                                </option>
-                                <option value="$" @if (get_general_value('currancy') == '$') selected @endif>دولار امريكي
-                                </option>
-                                <option value="د.إ" @if (get_general_value('currancy') == 'د.إ') selected @endif>درهم إماراتي
-                                </option>
-                                <option value="ر.ع"@if (get_general_value('currancy') == 'ر.ع') selected @endif>ريال عماني
-                                </option>
-                                <option value="د.ك"@if (get_general_value('currancy') == 'د.ك') selected @endif>دينار كويتي
-                                </option>
-                                <option value="ر.ق"@if (get_general_value('currancy') == 'ر.ق') selected @endif>ريال قطري
-                                </option>
-                                <option value="د.ب"@if (get_general_value('currancy') == 'د.ب') selected @endif>دينار بحريني
-                                </option>
+                                <option value="ر.س" @if (get_general_value('currancy') == 'ر.س') selected @endif>ريال سعودي</option>
+                                <option value="$" @if (get_general_value('currancy') == '$') selected @endif>دولار امريكي</option>
+                                <option value="د.إ" @if (get_general_value('currancy') == 'د.إ') selected @endif>درهم إماراتي</option>
+                                <option value="ر.ع"@if (get_general_value('currancy') == 'ر.ع') selected @endif>ريال عماني</option>
+                                <option value="د.ك"@if (get_general_value('currancy') == 'د.ك') selected @endif>دينار كويتي</option>
+                                <option value="ر.ق"@if (get_general_value('currancy') == 'ر.ق') selected @endif>ريال قطري</option>
+                                <option value="د.ب"@if (get_general_value('currancy') == 'د.ب') selected @endif>دينار بحريني</option>
                             </select>
-
                         </div>
                     </div>
 
-                    <!-- التوقيع -->
-
-
-                    <!-- الدفعة -->
-                    {{-- <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
-                        <label for="batch" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
-                            ٌقيمة الدفعة الاولى
-
-                        </label>
-                        <div class="md:col-span-2">
-                            <input type="text" id="batch" name="general[batch]"
-                                value="{{ get_general_value('batch') ?? old('general.batch') }}"
-                                class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                                placeholder="أدخل الدفعة الاولى">
-                        </div>
-                    </div> --}}
                     <!-- خيارات الدفع -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
@@ -418,8 +383,7 @@
 
                                 <div id="paymentsContainer">
                                     @php
-                                        $multiple_payments =
-                                            json_decode(get_general_value('multiple_payments') ?? '[]', true) ?? [];
+                                        $multiple_payments = json_decode(get_general_value('multiple_payments') ?? '[]', true) ?? [];
                                     @endphp
 
                                     @if (count($multiple_payments) > 0)
@@ -465,10 +429,7 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center justify-content-between p-3 rounded">
-
                         <input type="hidden" name="general[kent_payment]" value="off">
-
-                        <!-- Visible checkbox -->
                         <label for="daman_text" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
                             تقسيط كي نت
                         </label>
@@ -479,10 +440,7 @@
                         </label>
                     </div>
                     <div class="d-flex align-items-center justify-content-between p-3 rounded">
-
                         <input type="hidden" name="general[tappy_tamara_payment]" value="off">
-
-                        <!-- Visible checkbox -->
                         <label for="daman_text" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
                             تقسيط تابي و تمارة
                         </label>
@@ -515,6 +473,7 @@
             </div>
         </div>
     </div>
+
     <script>
         document.getElementById('web_logo').addEventListener('change', function(event) {
             const file = event.target.files[0];
@@ -533,48 +492,48 @@
                 previewImage.src = '';
             }
         });
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const customPaymentToggle = document.getElementById('customPaymentToggle');
-        const multiplePaymentsToggle = document.getElementById('multiplePaymentsToggle');
-        const customPaymentField = document.getElementById('customPaymentField');
-        const multiplePaymentsFields = document.getElementById('multiplePaymentsFields');
-        const paymentsContainer = document.getElementById('paymentsContainer');
-        const addPaymentBtn = document.getElementById('addPaymentBtn');
 
-        function toggleCustomPayment(enabled) {
-            customPaymentToggle.checked = enabled;
-            customPaymentField.classList.toggle('hidden', !enabled);
-            if (enabled) {
-                // Disable multiple payments
-                multiplePaymentsToggle.checked = false;
-                multiplePaymentsFields.classList.add('hidden');
+        document.addEventListener('DOMContentLoaded', function() {
+            // عناصر التحكم في خيارات الدفع
+            const customPaymentToggle = document.getElementById('customPaymentToggle');
+            const multiplePaymentsToggle = document.getElementById('multiplePaymentsToggle');
+            const customPaymentField = document.getElementById('customPaymentField');
+            const multiplePaymentsFields = document.getElementById('multiplePaymentsFields');
+            const paymentsContainer = document.getElementById('paymentsContainer');
+            const addPaymentBtn = document.getElementById('addPaymentBtn');
+
+            // تهيئة الحقول عند تحميل الصفحة
+            function initializePaymentOptions() {
+                const customEnabled = customPaymentToggle.checked;
+                const multipleEnabled = multiplePaymentsToggle.checked;
+
+                customPaymentField.classList.toggle('hidden', !customEnabled);
+                multiplePaymentsFields.classList.toggle('hidden', !multipleEnabled);
+
+                // تأكد من عدم تفعيل الخيارين معاً
+                if (customEnabled && multipleEnabled) {
+                    multiplePaymentsToggle.checked = false;
+                    multiplePaymentsFields.classList.add('hidden');
+                }
             }
-        }
 
-        function toggleMultiplePayments(enabled) {
-            multiplePaymentsToggle.checked = enabled;
-            multiplePaymentsFields.classList.toggle('hidden', !enabled);
-            if (enabled) {
-                // Disable custom payment
-                customPaymentToggle.checked = false;
-                customPaymentField.classList.add('hidden');
+            // التحكم في تبديل الخيارات
+            function handleToggleChange(event) {
+                const target = event.target;
+
+                if (target === customPaymentToggle && target.checked) {
+                    multiplePaymentsToggle.checked = false;
+                    multiplePaymentsFields.classList.add('hidden');
+                    customPaymentField.classList.remove('hidden');
+                } else if (target === multiplePaymentsToggle && target.checked) {
+                    customPaymentToggle.checked = false;
+                    customPaymentField.classList.add('hidden');
+                    multiplePaymentsFields.classList.remove('hidden');
+                }
             }
-        }
 
-        // أحداث التبديل بين الخيارين
-        customPaymentToggle.addEventListener('change', function () {
-            toggleCustomPayment(this.checked);
-        });
-
-        multiplePaymentsToggle.addEventListener('change', function () {
-            toggleMultiplePayments(this.checked);
-        });
-
-        // إضافة دفعة جديدة
-        if (addPaymentBtn) {
-            addPaymentBtn.addEventListener('click', function () {
+            // إضافة دفعة جديدة
+            function addPaymentField() {
                 const newInputDiv = document.createElement('div');
                 newInputDiv.className = 'flex gap-2 payment-input mb-2';
                 newInputDiv.innerHTML = `
@@ -584,18 +543,32 @@
                     <button type="button" class="remove-payment-btn px-3 py-1 bg-red-500 text-white rounded-md hover:bg-red-600 transition">حذف</button>
                 `;
                 paymentsContainer.appendChild(newInputDiv);
-            });
-        }
+            }
 
-        // حذف دفعة
-        if (paymentsContainer) {
-            paymentsContainer.addEventListener('click', function (e) {
-                if (e.target.classList.contains('remove-payment-btn')) {
-                    e.target.closest('.payment-input').remove();
+            // حذف دفعة
+            function removePaymentField(event) {
+                if (event.target.classList.contains('remove-payment-btn')) {
+                    const paymentInputs = document.querySelectorAll('.payment-input');
+                    if (paymentInputs.length > 1) {
+                        event.target.closest('.payment-input').remove();
+                    }
                 }
-            });
-        }
-    });
-</script>
+            }
 
+            // إضافة Event Listeners
+            customPaymentToggle.addEventListener('change', handleToggleChange);
+            multiplePaymentsToggle.addEventListener('change', handleToggleChange);
+            
+            if (addPaymentBtn) {
+                addPaymentBtn.addEventListener('click', addPaymentField);
+            }
+            
+            if (paymentsContainer) {
+                paymentsContainer.addEventListener('click', removePaymentField);
+            }
+
+            // التهيئة الأولية
+            initializePaymentOptions();
+        });
+    </script>
 </x-filament-panels::page>
