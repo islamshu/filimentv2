@@ -322,7 +322,7 @@
                     </div>
 
                     <!-- خيارات الدفع -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
+                    {{-- <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
                             خيارات نظام الدفع
                         </label>
@@ -414,7 +414,7 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
                     <!-- الرقم الضريبي -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">

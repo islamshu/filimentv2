@@ -17,6 +17,7 @@ class PaymentSettingsResource extends Resource
     protected static ?string $navigationLabel = 'إعدادات الدفعات';
     protected static ?string $modelLabel = 'إعدادات الدفعات';
     protected static ?string $navigationGroup = 'الإعدادات';
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
     {

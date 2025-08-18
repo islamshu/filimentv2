@@ -16,6 +16,13 @@
                         <a href="{{route('filament.admin.pages.data-setting') }}" target="_blank">مشاهدة الصفحة</a>
                     </td>
                 </tr>
+                  <tr>
+                    <td class="px-4 py-2 border-b">1</td>
+                    <td class="px-4 py-2 border-b">اعدادات الدفع </td>
+                    <td class="px-4 py-2 border-b text-blue-600">
+                        <a href="{{route('filament.admin.resources.payment-settings.index') }}" target="_blank">مشاهدة الصفحة</a>
+                    </td>
+                </tr>
                 <tr>
                     <td class="px-4 py-2 border-b">2</td>
                     <td class="px-4 py-2 border-b">من نحن و الاسترجاع و الاسترداد</td>
