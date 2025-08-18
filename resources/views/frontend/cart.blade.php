@@ -86,26 +86,26 @@
         }
     </style>
 @endsection
+
 @section('content')
     <section class="mt-5 py-3" style="margin-bottom: 90px !important;">
     </section>
 
-
     @if (count($cart) == 0)
-        <nav aria-label="breadcrumb " style="margin: 20px">
+        <nav aria-label="breadcrumb" style="margin: 20px">
             <ol class="breadcrumb mt-4">
-                <li class="breadcrumb-item text-info"><a href="/" class="text-info text-decoration-none"
-                        style="font-size: 14px;">الرئيسية</a></li>
+                <li class="breadcrumb-item text-info">
+                    <a href="/" class="text-info text-decoration-none" style="font-size: 14px;">الرئيسية</a>
+                </li>
                 <li class="breadcrumb-item active" aria-current="page" style="font-size: 14px;">سلة المشتريات</li>
             </ol>
         </nav>
-        <div class="row my-2">
-            <!-- itmes -->
-            <div class="col-md-12 my-2">
 
-                <div class="container rounded  bg-white p-5 text-center " style="color: #121f41;">
+        <div class="row my-2">
+            <div class="col-md-12 my-2">
+                <div class="container rounded bg-white p-5 text-center" style="color: #121f41;">
                     <div class="mt-3"
-                        style="width:8rem;height:8rem;border-radius:50%;padding:10px;text-align:center;background-color:#f3f4f6;margin:auto;line-height:4rem">
+                         style="width:8rem;height:8rem;border-radius:50%;padding:10px;text-align:center;background-color:#f3f4f6;margin:auto;line-height:4rem">
                         <i class="fa-solid fa-bag-shopping" style="font-size: 50px;color:gray;margin-top:25px;"></i>
                     </div>
                     <div class="my-4 fs-5">
@@ -116,419 +116,276 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 text-secondary d-none">
-                <div class="container rounded bg-white shadow border my-2 px-3 py-2">
-                    <h5 class="border-bottom py-3 mb-3 fw-normal">تفاصيل الفاتورة</h5>
-                    <div class="row my-2">
-                        <div class="col-6">قيمة المنتجات :</div>
-                        <div class="col-6 text-end">0 </div>
-                    </div>
-                    <div class="row my-2">
-                        <div class="col-6">التوصيل:</div>
-                        <div class="col-6 text-end">00.00 </div>
-                    </div>
-                    <div class="row my-2 border-top pt-2 text-dark fw-semibold">
-                        <div class="col-6">المجموع الكلي :</div>
-                        <div class="col-6 text-end text-success">0 </div>
-                    </div>
-                    <div class="row mt-5 mb-3">
-                        <div class="col-12">
-                            <a href="index-2.html" class="btn w-100 btn-outline-dark">
-                                <i class="fas fa-angle-right fa-fw"></i>
-                                متابعة التسوق
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
+
     @else
-        <nav aria-label="breadcrumb " style="margin: 20px">
+        <nav aria-label="breadcrumb" style="margin: 20px">
             <ol class="breadcrumb mt-4">
-                <li class="breadcrumb-item text-info"><a href="/" class="text-info text-decoration-none"
-                        style="font-size: 14px;">الرئيسية</a></li>
+                <li class="breadcrumb-item text-info">
+                    <a href="/" class="text-info text-decoration-none" style="font-size: 14px;">الرئيسية</a>
+                </li>
                 <li class="breadcrumb-item active" aria-current="page" style="font-size: 14px;">سلة المشتريات</li>
             </ol>
         </nav>
+
         <section class="container mt-3">
-
-
-
-            <div class="">
-
-                <div class="row my-2">
-                    <div class="col-md-12 my-2">
-                        @foreach ($cart as $item)
-                            <div class="container rounded border bg-white mb-3">
-                                @php
-                                    $product = \App\Models\Product::find($item['id']);
-                                @endphp
-                                <div class="row align-items-center py-2">
-                                    <div class="col-4 col-md-3 col-lg-2">
-                                        <div class="rounded border m-3">
-                                            <img class="w-100 d-block mx-auto" src="{{ $product->getImageUrl() }}"
-                                                alt="{{ $item['name'] }}">
-                                        </div>
+            <div class="row my-2">
+                <div class="col-md-12 my-2">
+                    @foreach ($cart as $item)
+                        @php $product = \App\Models\Product::find($item['id']); @endphp
+                        <div class="container rounded border bg-white mb-3">
+                            <div class="row align-items-center py-2">
+                                <div class="col-4 col-md-3 col-lg-2">
+                                    <div class="rounded border m-3">
+                                        <img class="w-100 d-block mx-auto" src="{{ $product->getImageUrl() }}" alt="{{ $item['name'] }}">
                                     </div>
-                                    <div class="col-7 col-md-6 col-lg-4 mt-md-0 mt-3 px-0">
-                                        <a href="{{ route('single_product', $product->id) }}"
-                                            class="text-decoration-none h6 d-block text-dark text-start">
-                                            {{ $product->name }}
-                                        </a>
-                                        <span class="text-black-50">{{ $product->price - $product->discount }}
-                                            {{ get_general_value('currancy') }}</span>
-                                    </div>
+                                </div>
+                                <div class="col-7 col-md-6 col-lg-4 mt-md-0 mt-3 px-0">
+                                    <a href="{{ route('single_product', $product->id) }}"
+                                       class="text-decoration-none h6 d-block text-dark text-start">
+                                        {{ $product->name }}
+                                    </a>
+                                    <span class="text-black-50">{{ $product->price - $product->discount }} {{ get_general_value('currancy') }}</span>
+                                </div>
 
-                                    <div class="col-12 col-md-3 col-lg-5 my-3 px-0">
-                                        <div class="container">
-                                            <div class="row align-items-center">
-                                                <div class="col-8 col-md-7 ps-3 ps-lg-0">
-                                                    <form action="javascript:void(0);" method="POST"
-                                                        class="row align-items-center justify-content-center justify-content-lg-start update-quantity-form">
-                                                        @csrf
-                                                        <input type="hidden" name="itemKey" value="{{ $item['id'] }}">
-                                                        <button type="button" class="text-center form-control decrease-btn"
-                                                            style="width: 40px;height:40px !important;">
-                                                            <i class="fa fa-minus text-black-50" aria-hidden="true"></i>
-                                                        </button>
-                                                        <input type="number"
-                                                            class="text-center form-control quantity-input"
-                                                            style="width: 50px;height:40px !important;"
-                                                            value="{{ $item['quantity'] }}" name="quantity" min="1">
-                                                        <button type="button" class="text-center form-control increase-btn"
-                                                            style="width: 40px;height:40px !important;">
-                                                            <i class="fa fa-plus text-black-50" aria-hidden="true"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
-                                                <div class="col-4 col-md-5 text-end fs-6 fw-bold total-price"
-                                                    data-item-key="{{ $item['id'] }}">
-                                                    المجموع: {{ $item['price'] * $item['quantity'] }}
-                                                    {{ get_general_value('currancy') }}
-                                                </div>
+                                <div class="col-12 col-md-3 col-lg-5 my-3 px-0">
+                                    <div class="container">
+                                        <div class="row align-items-center">
+                                            <div class="col-8 col-md-7 ps-3 ps-lg-0">
+                                                <form action="javascript:void(0);" method="POST"
+                                                      class="row align-items-center justify-content-center justify-content-lg-start update-quantity-form">
+                                                    @csrf
+                                                    <input type="hidden" name="itemKey" value="{{ $item['id'] }}">
+                                                    <button type="button" class="text-center form-control decrease-btn" style="width: 40px;height:40px !important;">
+                                                        <i class="fa fa-minus text-black-50" aria-hidden="true"></i>
+                                                    </button>
+                                                    <input type="number" class="text-center form-control quantity-input"
+                                                           style="width: 50px;height:40px !important;"
+                                                           value="{{ $item['quantity'] }}" name="quantity" min="1">
+                                                    <button type="button" class="text-center form-control increase-btn" style="width: 40px;height:40px !important;">
+                                                        <i class="fa fa-plus text-black-50" aria-hidden="true"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                            <div class="col-4 col-md-5 text-end fs-6 fw-bold total-price" data-item-key="{{ $item['id'] }}">
+                                                المجموع: {{ $item['price'] * $item['quantity'] }} {{ get_general_value('currancy') }}
                                             </div>
                                         </div>
                                     </div>
+                                </div>
 
-                                    <!-- زر الحذف بجانب العناصر في الشاشات الصغيرة والكبيرة -->
-                                    <div
-                                        class="col-1 col-md-1 mt-md-0 my-2 d-flex align-items-center justify-content-center">
-                                        <form action="{{ route('cart.remove') }}" method="POST">
-                                            @csrf
-                                            @method('DELETE')
-                                            <input type="hidden" name="itemKey" value="{{ $item['id'] }}">
-                                            <button type="submit" style="background-color: transparent; border:none;">
-                                                <i class="fa-solid fa-circle-xmark"
-                                                    style="color: #ff6a79;cursor:pointer;font-size:25px;"></i>
-                                            </button>
-                                        </form>
-                                    </div>
+                                <div class="col-1 col-md-1 mt-md-0 my-2 d-flex align-items-center justify-content-center">
+                                    <form action="{{ route('cart.remove') }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <input type="hidden" name="itemKey" value="{{ $item['id'] }}">
+                                        <button type="submit" style="background-color: transparent; border:none;">
+                                            <i class="fa-solid fa-circle-xmark" style="color: #ff6a79;cursor:pointer;font-size:25px;"></i>
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
-                        @endforeach
-                    </div>
-
-
-                    <!-- Add jQuery code for increase/decrease functionality -->
-
-
-
-                    <div class="container mt-4 rounded bg-white border py-4">
-                        <h5 class="fw-bold text-black mb-3">مجموع السلة</h5>
-
-                        <div class="row">
-                            <div class="col-6">الإجمالي:</div>
-                            <div class="col-6 text-end fw-bold total_price">{{ $totalPrice }}
-                                {{ get_general_value('currancy') }}</div>
                         </div>
-
-                    </div>
-                    <form action="{{ route('send_data') }}" method="POST"
-                        class="row align-items-center justify-content-center justify-content-lg-start">
-                        @csrf
-                        <div class="product-options mt-4 rounded bg-white border py-4 px-4">
-                            <h5 class="fw-bold text-black mb-3">تفاصيل الطلب</h5>
-
-                            <!-- Full Name -->
-                            <div class="form-group mb-3">
-                                <label class="product-option-name required">الاسم كاملا</label>
-                                <input type="text" id="fullName" name="name" class="form-control"
-                                    placeholder="الاسم كاملا" required="">
-                            </div>
-
-                            <!-- Email -->
-                            <div class="form-group mb-3">
-                                <label class="product-option-name required">الايميل</label>
-                                <input type="email" id="email" name="email" class="form-control"
-                                    placeholder="الايميل" required="">
-                            </div>
-
-                            <!-- WhatsApp Number -->
-                            <div class="form-group mb-3">
-                                <label class="product-option-name required">رقم الواتس</label>
-                                <input type="text" id="WhatsApp" name="whatsApp" class="form-control"
-                                    placeholder="رقم الواتس" required="">
-                            </div>
-
-                            <!-- Full Address -->
-                            <div class="form-group mb-3">
-                                <label class="product-option-name required">العنوان كاملا</label>
-                                <input type="text" id="address" name="address" class="form-control"
-                                    placeholder="العنوان كاملا" required="">
-                            </div>
-
-                            <!-- Payment Method -->
-                            <div class="form-group mb-3">
-                                <label class="product-option-name required">طريقة الدفع</label>
-                                <select class="form-control" id="installment" name="payment_method" required="">
-                                    <option value="" selected="" disabled="">اختر</option>
-                                    <option value="all">كامل</option>
-                                    <option value="installment">تقسيط</option>
-                                    @if (get_general_value('tappy_tamara_payment') == 'on')
-                                        <option value="tappy">تابي</option>
-                                        <option value="tamara">تمارا</option>
-                                    @endif
-                                    @if (get_general_value('kent_payment') == 'on')
-                                        <option value="k-net">كي نت</option>
-                                    @endif
-                                </select>
-                            </div>
-
-                            <!-- Total Price -->
-                            <div class="form-group mb-3 installment">
-                                <label class="product-option-name required">المجموع الكلي</label>
-                                <input value="{{ $totalPrice }}" id="TotalPrice" name="TotalPrice"
-                                    class="form-control" type="number" readonly="">
-                            </div>
-
-                            <!-- First Payment -->
-                            @php
-    $isCustom = get_general_value('custom_payment_enabled');
-    $isMultiple = get_general_value('multiple_payments_enabled');
-    $multiple_payments = json_decode(get_general_value('multiple_payments') ?? '[]', true);
-    $default_batch = get_general_value('batch');
-@endphp
-
-<div class="form-group mb-3 installment">
-    <label class="product-option-name required">الدفعة الأولى</label>
-
-    @if ($isCustom)
-        <!-- دفعة مخصصة -->
-        <input value="{{ $default_batch }}" min="0" readonly
-            id="FirstPayment" name="FirstPayment" class="form-control" type="number">
-    @elseif ($isMultiple && count($multiple_payments) > 0)
-        <!-- دفعات متعددة -->
-        <select id="FirstPaymentSelect" name="FirstPayment" class="form-control">
-            <option value="">اختر قيمة الدفعة</option>
-            @foreach ($multiple_payments as $payment)
-                <option value="{{ $payment }}">{{ $payment }} </option>
-            @endforeach
-        </select>
-
-        <!-- حقل مخفي لتحديث قيمة الدفعة تلقائيًا عند الاختيار -->
-        <input type="hidden" id="FirstPayment" name="FirstPayment" value="">
-    @else
-        <p class="text-danger">لم يتم تفعيل نظام دفعات صالح.</p>
-    @endif
-</div>
-
-
-
-
-                            <!-- Installment By -->
-                            <div class="form-group mb-3 installment">
-                                <label class="product-option-name required">الرجاء تحديد عدد شهور التقسيط </label>
-                                <select name="InstallmentBy" id="InstallmentBy" class="form-control">
-                                    <option value="1">1 شهر</option>
-                                    <option value="2">2 شهر</option>
-                                    <option value="3">3 شهر</option>
-                                    <option value="4">4 شهر</option>
-                                    <option value="5">5 شهر</option>
-                                    <option value="6">6 شهر</option>
-                                    <option value="7">7 شهر</option>
-                                    <option value="8">8 شهر</option>
-                                    <option value="9">9 شهر</option>
-                                    <option value="10">10 شهر</option>
-                                    <option value="11">11 شهر</option>
-                                    <option value="12">12 شهر</option>
-                                    <option value="13">13 شهر</option>
-                                    <option value="14">14 شهر</option>
-                                    <option value="15">15 شهر</option>
-                                    <option value="16">16 شهر</option>
-                                    <option value="17">17 شهر</option>
-                                    <option value="18">18 شهر</option>
-                                    <option value="19">19 شهر</option>
-                                    <option value="20">20 شهر</option>
-                                    <option value="21">21 شهر</option>
-                                    <option value="22">22 شهر</option>
-                                    <option value="23">23 شهر</option>
-                                    <option value="24">24 شهر</option>
-                                </select>
-                            </div>
-
-                            <!-- Monthly Payment -->
-                            <div class="form-group mb-3 installment" id="MonthlyPaymentLi" style="display:none;">
-                                <label class="product-option-name required">الدفعة الشهرية</label>
-                                <input value="0" readonly="" id="MonthlyPayment" name="MonthlyPayment"
-                                    class="form-control">
-                            </div>
-
-                            <!-- Submit Button -->
-                            <div class="form-group text-end">
-                                <button type="submit" class="btn btn-primary w-100">إتمام الطلب</button>
-                            </div>
-                        </div>
-                    </form>
-
-
+                    @endforeach
                 </div>
 
+                <div class="container mt-4 rounded bg-white border py-4">
+                    <h5 class="fw-bold text-black mb-3">مجموع السلة</h5>
+                    <div class="row">
+                        <div class="col-6">الإجمالي:</div>
+                        <div class="col-6 text-end fw-bold total_price">{{ $totalPrice }} {{ get_general_value('currancy') }}</div>
+                    </div>
+                </div>
+
+                <form action="{{ route('send_data') }}" method="POST" class="row align-items-center justify-content-center justify-content-lg-start">
+                    @csrf
+                    <div class="product-options mt-4 rounded bg-white border py-4 px-4">
+                        <h5 class="fw-bold text-black mb-3">تفاصيل الطلب</h5>
+
+                        <!-- الاسم -->
+                        <div class="form-group mb-3">
+                            <label class="product-option-name required">الاسم كاملا</label>
+                            <input type="text" id="fullName" name="name" class="form-control" placeholder="الاسم كاملا" required>
+                        </div>
+
+                        <!-- الايميل -->
+                        <div class="form-group mb-3">
+                            <label class="product-option-name required">الايميل</label>
+                            <input type="email" id="email" name="email" class="form-control" placeholder="الايميل" required>
+                        </div>
+
+                        <!-- رقم الواتس -->
+                        <div class="form-group mb-3">
+                            <label class="product-option-name required">رقم الواتس</label>
+                            <input type="text" id="WhatsApp" name="whatsApp" class="form-control" placeholder="رقم الواتس" required>
+                        </div>
+
+                        <!-- العنوان -->
+                        <div class="form-group mb-3">
+                            <label class="product-option-name required">العنوان كاملا</label>
+                            <input type="text" id="address" name="address" class="form-control" placeholder="العنوان كاملا" required>
+                        </div>
+
+                        <!-- طريقة الدفع -->
+                        <div class="form-group mb-3">
+                            <label class="product-option-name required">طريقة الدفع</label>
+                            <select class="form-control" id="installment" name="payment_method" required>
+                                <option value="" selected disabled>اختر</option>
+                                <option value="all">كامل</option>
+                                <option value="installment">تقسيط</option>
+                                @if (get_general_value('tappy_tamara_payment') == 'on')
+                                    <option value="tappy">تابي</option>
+                                    <option value="tamara">تمارا</option>
+                                @endif
+                                @if (get_general_value('kent_payment') == 'on')
+                                    <option value="k-net">كي نت</option>
+                                @endif
+                            </select>
+                        </div>
+
+                        @php
+                            $paymentSettings = App\Models\PaymentSettings::first();
+                            $isCustom = $paymentSettings?->custom_payment_enabled ?? false;
+                            $isMultiple = $paymentSettings?->multiple_payments_enabled ?? false;
+                            $multiple_payments = $paymentSettings?->multiple_payments ?? [];
+                            $default_batch = $paymentSettings?->batch ?? 0;
+                        @endphp
+
+                        <!-- المجموع الكلي -->
+                        <div class="form-group mb-3 installment">
+                            <label class="product-option-name required">المجموع الكلي</label>
+                            <input value="{{ $totalPrice }}" id="TotalPrice" name="TotalPrice" class="form-control" type="number" readonly>
+                        </div>
+
+                        <!-- الدفعة الأولى -->
+                        <div class="form-group mb-3 installment">
+                            <label class="product-option-name required">الدفعة الأولى</label>
+                            @if ($isCustom)
+                                <input value="{{ $default_batch }}" min="0" readonly id="FirstPayment" name="FirstPayment" class="form-control" type="number">
+                            @elseif ($isMultiple && count($multiple_payments) > 0)
+                                <select id="FirstPaymentSelect" class="form-control">
+                                    <option value="">اختر قيمة الدفعة</option>
+                                    @foreach ($multiple_payments as $payment)
+                                        <option value="{{ $payment }}">{{ $payment }}</option>
+                                    @endforeach
+                                </select>
+                                <input type="hidden" id="FirstPayment" name="FirstPayment" value="">
+                            @else
+                                <p class="text-danger">لم يتم تفعيل نظام دفعات صالح.</p>
+                            @endif
+                        </div>
+
+                        <!-- عدد أشهر التقسيط -->
+                        <div class="form-group mb-3 installment">
+                            <label class="product-option-name required">الرجاء تحديد عدد شهور التقسيط</label>
+                            <select name="InstallmentBy" id="InstallmentBy" class="form-control">
+                                @for($i = 1; $i <= 24; $i++)
+                                    <option value="{{ $i }}">{{ $i }} شهر</option>
+                                @endfor
+                            </select>
+                        </div>
+
+                        <!-- الدفعة الشهرية -->
+                        <div class="form-group mb-3 installment" id="MonthlyPaymentLi" style="display:none;">
+                            <label class="product-option-name required">الدفعة الشهرية</label>
+                            <input value="0" readonly id="MonthlyPayment" name="MonthlyPayment" class="form-control">
+                        </div>
+
+                        <!-- زر الإرسال -->
+                        <div class="form-group text-end">
+                            <button type="submit" class="btn btn-primary w-100">إتمام الطلب</button>
+                        </div>
+
+                    </div>
+                </form>
             </div>
         </section>
+
         <div class="floating-box">
             <h5>السعر الإجمالي</h5>
             <p id="floatingTotal">{{ $totalPrice }} {{ get_general_value('currancy') }}</p>
-
         </div>
 
         <a href="https://wa.me/{{ get_general_value('whatsapp') }}" class="contact p-1 rounded-circle text-center"
-            style="background-color:#4dc247;width:50px;height:50px;">
+           style="background-color:#4dc247;width:50px;height:50px;">
             <i class="fab fa-whatsapp text-white my-1 fa-2x"></i>
         </a>
-        </main>
     @endif
 @endsection
+
 @section('scripts')
-    <script>
-        $(document).ready(function() {
-            // When the increase button is clicked
-            $('.increase-btn').click(function() {
-                var form = $(this).closest('form');
-                var quantityInput = form.find('.quantity-input');
-                var quantity = parseInt(quantityInput.val());
-                quantityInput.val(quantity + 1);
-                updateCartQuantity(form);
-            });
+<script>
+$(document).ready(function() {
+    // عناصر الدفع
+    const $installmentSelect = $('#installment');
+    const $installmentFields = $('.installment');
+    const $installmentBySelect = $('#InstallmentBy');
+    const $firstPaymentInput = $('#FirstPayment');
+    const $firstPaymentSelect = $('#FirstPaymentSelect');
+    const $monthlyPaymentInput = $('#MonthlyPayment');
+    const $monthlyPaymentLi = $('#MonthlyPaymentLi');
+    const $totalPriceInput = $('#TotalPrice');
 
-            // When the decrease button is clicked
-            $('.decrease-btn').click(function() {
-                var form = $(this).closest('form');
-                var quantityInput = form.find('.quantity-input');
-                var quantity = parseInt(quantityInput.val());
+    // إظهار/إخفاء خيارات التقسيط مع alert
+    function toggleInstallmentFields() {
+        const value = $installmentSelect.val();
 
-                if (quantity > 1) {
-                    quantityInput.val(quantity - 1);
-                    updateCartQuantity(form);
-                }
-            });
+       
 
-            // When the quantity input is changed
-            $('.quantity-input').change(function() {
-                var form = $(this).closest('form');
-                updateCartQuantity(form);
-            });
+        if (value === 'installment' || value === 'k-net') {
+            $installmentFields.show();
+            updateMonthlyPayment();
+        } else {
+            $installmentFields.hide();
+            $monthlyPaymentLi.hide();
+            $monthlyPaymentInput.val(0);
+        }
+    }
 
-            function updateCartQuantity(form) {
-                var itemKey = form.find('input[name="itemKey"]').val();
-                var quantity = form.find('.quantity-input').val();
+    // حساب الدفعة الشهرية
+    function updateMonthlyPayment() {
+        const selectedMonths = parseInt($installmentBySelect.val()) || 0;
+        let firstPaymentValue = 0;
 
-                $.ajax({
-                    url: '{{ route('cart.update') }}',
-                    method: 'POST',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                        itemKey: itemKey,
-                        quantity: quantity,
-                    },
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            var currany = "{{ get_general_value('currancy') }}";
-                            $('.total-price[data-item-key="' + itemKey + '"]').text('المجموع: ' + (
-                                response.cart[itemKey].price * response.cart[itemKey].quantity
-                            ) + ' ' + currany);
+        if ($firstPaymentSelect.length) {
+            firstPaymentValue = parseFloat($firstPaymentSelect.val()) || 0;
+        } else if ($firstPaymentInput.length) {
+            firstPaymentValue = parseFloat($firstPaymentInput.val()) || 0;
+        }
 
-                            $('#floatingTotal').text(response.totalPrice + ' ' + currany);
-                            $('.total_price').text(response.totalPrice + ' ' + currany);
-                            $('#TotalPrice').val(response.totalPrice);
+        const totalPriceValue = parseFloat($totalPriceInput.val()) || 0;
 
-                            if ($('#installment').val() === 'installment' || $('#installment').val() === 'k-net') {
-                                updateMonthlyPayment();
-                            }
-                        }
-                    }
-                });
+        if (selectedMonths > 0) {
+            const remainingAmount = totalPriceValue - firstPaymentValue;
+            if (remainingAmount >= 0) {
+                const monthlyPayment = (remainingAmount / selectedMonths).toFixed(2);
+                $monthlyPaymentLi.show();
+                $monthlyPaymentInput.val(monthlyPayment);
+            } else {
+                alert("الدفعة الأولى أكبر من المجموع الكلي!");
+                if ($firstPaymentSelect.length) $firstPaymentSelect.val('');
+                if ($firstPaymentInput.length) $firstPaymentInput.val(0);
+                $monthlyPaymentLi.hide();
+                $monthlyPaymentInput.val(0);
             }
+        }
+    }
 
-            // Installment calculation logic
-            document.getElementById('installment').addEventListener('change', function() {
-                const installmentElements = document.querySelectorAll('.installment');
-                if (this.value == 'installment' || this.value == 'k-net') {
-                    installmentElements.forEach(element => {
-                        element.style.display = 'block';
-                    });
-                    updateMonthlyPayment();
-                } else {
-                    installmentElements.forEach(element => {
-                        element.style.display = 'none';
-                    });
-                    monthlyPaymentLi.style.display = 'none';
-                    monthlyPaymentInput.value = 0;
-                }
-            });
+    // تفعيل الحدث عند اختيار طريقة الدفع
+    $installmentSelect.on('change', toggleInstallmentFields);
 
-            const installmentSelect = document.getElementById('InstallmentBy');
-            const firstPaymentInput = document.getElementById('FirstPayment');
-            const monthlyPaymentInput = document.getElementById('MonthlyPayment');
-            const monthlyPaymentLi = document.getElementById('MonthlyPaymentLi');
-            const totalPriceInput = document.getElementById('TotalPrice');
-            const firstPaymentSelect = document.getElementById('FirstPaymentSelect');
+    // تفعيل حساب الدفعة الشهرية عند تغيير عدد الأشهر
+    $installmentBySelect.on('change', updateMonthlyPayment);
 
-            function updateMonthlyPayment() {
-                const selectedMonths = parseInt(installmentSelect.value);
-                let firstPaymentValue = 0;
-                
-                // Get first payment value based on input type
-                if (firstPaymentSelect) {
-                    firstPaymentValue = parseFloat(firstPaymentSelect.value) || 0;
-                } else {
-                    firstPaymentValue = parseFloat(firstPaymentInput.value) || 0;
-                }
-                
-                const totalPriceValue = parseFloat(totalPriceInput.value) || 0;
+    // التغييرات على الدفعة الأولى
+    if ($firstPaymentInput.length) $firstPaymentInput.on('input', updateMonthlyPayment);
+    if ($firstPaymentSelect.length) $firstPaymentSelect.on('change', function() {
+        $firstPaymentInput.val($(this).val());
+        updateMonthlyPayment();
+    });
 
-                if (selectedMonths > 0) {
-                    const remainingAmount = totalPriceValue - firstPaymentValue;
-                    
-                    if (remainingAmount >= 0) {
-                        const monthlyPayment = (remainingAmount / selectedMonths).toFixed(2);
-                        monthlyPaymentLi.style.display = 'block';
-                        monthlyPaymentInput.value = monthlyPayment;
-                    } else {
-                        alert("الدفعة الأولى أكبر من المجموع الكلي!");
-                        if (firstPaymentSelect) {
-                            firstPaymentSelect.value = "";
-                        }
-                        firstPaymentInput.value = 0;
-                        monthlyPaymentLi.style.display = 'none';
-                        monthlyPaymentInput.value = 0;
-                    }
-                }
-            }
-
-            // Event listeners for installment calculation
-            installmentSelect.addEventListener('change', updateMonthlyPayment);
-            firstPaymentInput.addEventListener('input', updateMonthlyPayment);
-
-            // If multiple payments select exists
-            if (firstPaymentSelect) {
-                firstPaymentSelect.addEventListener('change', function() {
-                    // Update the hidden input value
-                    firstPaymentInput.value = this.value;
-                    
-                    // Calculate monthly payment
-                    updateMonthlyPayment();
-                });
-            }
-        });
-    </script>
+    // تنفيذ عند تحميل الصفحة
+    toggleInstallmentFields();
+});
+</script>
 @endsection

@@ -373,163 +373,123 @@
     @endif
 @endsection
 @section('scripts')
-    <script>
-        $(document).ready(function() {
-            // دالة لتحديث الدفعة الأولى بناءً على السلة الحالية
-            function updateFirstPayment() {
-    let firstPaymentAmount = parseFloat("{{ get_general_value('batch') }}");
-    let totalFirstPayment = 0;
-    let totalPrice = 0;
+<script>
+$(document).ready(function() {
+    // Elements
+    const installmentSelect = $('#installment');
+    const installmentElements = $('.installment');
+    const installmentBySelect = $('#InstallmentBy');
+    const firstPaymentInput = $('#FirstPayment');
+    const firstPaymentSelect = $('#FirstPaymentSelect');
+    const monthlyPaymentInput = $('#MonthlyPayment');
+    const monthlyPaymentLi = $('#MonthlyPaymentLi');
+    const totalPriceInput = $('#TotalPrice');
 
-    $('.product-item').each(function() {
-        const price = parseFloat($(this).data('price'));
-        const quantity = parseInt($(this).find('.quantity-input').val());
-        const itemTotal = price * quantity;
-        totalPrice += itemTotal;
+    // Function to show/hide installment fields
+    function toggleInstallmentFields() {
+        const value = installmentSelect.val();
 
-        // التحقق مما إذا كانت قيمة المنتج أكبر من قيمة الدفعة الأولى
-        if (itemTotal >= firstPaymentAmount) {
-            totalFirstPayment += quantity * firstPaymentAmount; // تعديل الحساب ليأخذ الكمية في الاعتبار
+        // Alert عند الاختيار
+        if (value) {
+            alert("لقد اخترت طريقة الدفع: " + value);
         }
+
+        if (value === 'installment' || value === 'k-net') {
+            installmentElements.show();
+            updateMonthlyPayment();
+        } else {
+            installmentElements.hide();
+            monthlyPaymentLi.hide();
+            monthlyPaymentInput.val(0);
+        }
+    }
+
+    // Function to calculate monthly payment
+    function updateMonthlyPayment() {
+        const selectedMonths = parseInt(installmentBySelect.val()) || 0;
+        let firstPaymentValue = 0;
+
+        if (firstPaymentSelect.length) {
+            firstPaymentValue = parseFloat(firstPaymentSelect.val()) || 0;
+        } else if (firstPaymentInput.length) {
+            firstPaymentValue = parseFloat(firstPaymentInput.val()) || 0;
+        }
+
+        const totalPriceValue = parseFloat(totalPriceInput.val()) || 0;
+
+        if (selectedMonths > 0) {
+            const remainingAmount = totalPriceValue - firstPaymentValue;
+
+            if (remainingAmount >= 0) {
+                const monthlyPayment = (remainingAmount / selectedMonths).toFixed(2);
+                monthlyPaymentLi.show();
+                monthlyPaymentInput.val(monthlyPayment);
+            } else {
+                alert("الدفعة الأولى أكبر من المجموع الكلي!");
+                if (firstPaymentSelect.length) firstPaymentSelect.val("");
+                if (firstPaymentInput.length) firstPaymentInput.val(0);
+                monthlyPaymentLi.hide();
+                monthlyPaymentInput.val(0);
+            }
+        }
+    }
+
+    // Event listeners
+    installmentSelect.change(toggleInstallmentFields);
+    installmentBySelect.change(updateMonthlyPayment);
+
+    if (firstPaymentInput.length) firstPaymentInput.on('input', updateMonthlyPayment);
+    if (firstPaymentSelect.length) firstPaymentSelect.change(function() {
+        firstPaymentInput.val($(this).val());
+        updateMonthlyPayment();
     });
 
-    if (totalPrice > 0 && totalPrice < firstPaymentAmount) {
-        totalFirstPayment = totalPrice;
-    }
+    // Trigger on page load
+    toggleInstallmentFields();
 
-    return {
-        firstPayment: totalFirstPayment,
-        totalPrice: totalPrice
-    };
-}
+    // Quantity update logic (existing)
+    $('.increase-btn, .decrease-btn').click(function() {
+        var form = $(this).closest('form');
+        var quantityInput = form.find('.quantity-input');
+        var quantity = parseInt(quantityInput.val()) || 0;
 
-            // دالة لتحديث كل الحسابات
-            function updateAllCalculations() {
-                const calculations = updateFirstPayment();
-                const firstPaymentValue = calculations.firstPayment;
-                const totalPriceValue = calculations.totalPrice;
+        if ($(this).hasClass('increase-btn')) quantityInput.val(quantity + 1);
+        else if ($(this).hasClass('decrease-btn') && quantity > 1) quantityInput.val(quantity - 1);
 
-                // تحديث القيم في الواجهة
-                $('.total_price').text(totalPriceValue.toFixed(2) + ' {{ get_general_value('currancy') }}');
-                $('#TotalPrice').val(totalPriceValue.toFixed(2));
-                $('#floatingTotal').text(totalPriceValue.toFixed(2) + ' {{ get_general_value('currancy') }}');
+        updateCartQuantity(form);
+    });
 
-                // إذا كانت طريقة الدفع تقسيط، تحديث الحسابات
-                if ($('#installment').val() === 'installment' || $('#installment').val() === 'k-net') {
-                    $('#FirstPayment').val(firstPaymentValue.toFixed(2));
-                    updateMonthlyPayment();
+    $('.quantity-input').change(function() {
+        var form = $(this).closest('form');
+        updateCartQuantity(form);
+    });
+
+    function updateCartQuantity(form) {
+        var itemKey = form.find('input[name="itemKey"]').val();
+        var quantity = form.find('.quantity-input').val();
+
+        $.ajax({
+            url: '{{ route('cart.update') }}',
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                itemKey: itemKey,
+                quantity: quantity,
+            },
+            success: function(response) {
+                if (response.status === 'success') {
+                    var currany = "{{ get_general_value('currancy') }}";
+                    $('.total-price[data-item-key="' + itemKey + '"]').text(
+                        'المجموع: ' + (response.cart[itemKey].price * response.cart[itemKey].quantity) + ' ' + currany
+                    );
+                    $('#floatingTotal').text(response.totalPrice + ' ' + currany);
+                    $('.total_price').text(response.totalPrice + ' ' + currany);
+                    $('#TotalPrice').val(response.totalPrice);
+                    toggleInstallmentFields();
                 }
             }
-
-            // دالة محدثة للأقساط الشهرية
-            function updateMonthlyPayment() {
-                const selectedMonths = parseInt($('#InstallmentBy').val());
-                const totalPriceValue = parseFloat($('#TotalPrice').val()) || 0;
-                const firstPaymentValue = parseFloat($('#FirstPayment').val()) || 0;
-
-                if (selectedMonths > 0) {
-                    const remainingAmount = totalPriceValue - firstPaymentValue;
-
-                    if (remainingAmount > 0) {
-                        const monthlyPayment = (remainingAmount / selectedMonths).toFixed(2);
-                        $('#MonthlyPaymentLi').show();
-                        $('#MonthlyPayment').val(monthlyPayment);
-                    } else {
-                        $('#MonthlyPaymentLi').hide();
-                        $('#MonthlyPayment').val(0);
-                    }
-                } else {
-                    $('#MonthlyPaymentLi').hide();
-                    $('#MonthlyPayment').val(0);
-                }
-            }
-
-            // زيادة الكمية
-          // زيادة الكمية
-$('.increase-btn').click(function() {
-    const input = $(this).siblings('.quantity-input');
-    input.val(parseInt(input.val()) + 1);
-    updateCartItem($(this).closest('form'));
-    updateAllCalculations(); // تحديث الحسابات مباشرة
-});
-
-// نقصان الكمية
-$('.decrease-btn').click(function() {
-    const input = $(this).siblings('.quantity-input');
-    if (parseInt(input.val()) > 1) {
-        input.val(parseInt(input.val()) - 1);
-        updateCartItem($(this).closest('form'));
-        updateAllCalculations(); // تحديث الحسابات مباشرة
-    }
-});
-
-// تغيير الكمية يدويًا
-$('.quantity-input').change(function() {
-    if (parseInt($(this).val()) < 1) {
-        $(this).val(1);
-    }
-    updateCartItem($(this).closest('form'));
-    updateAllCalculations(); // تحديث الحسابات مباشرة
-});
-
-            // تحديث عنصر السلة عبر Ajax
-            function updateCartItem(form) {
-                const itemKey = form.find('input[name="itemKey"]').val();
-                const quantity = form.find('.quantity-input').val();
-
-                $.ajax({
-                    url: '{{ route('cart.update') }}',
-                    method: 'POST',
-                    data: {
-                        _token: '{{ csrf_token() }}',
-                        itemKey: itemKey,
-                        quantity: quantity
-                    },
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            // تحديث السعر الإجمالي للعنصر
-                            const itemTotal = response.cart[itemKey].price * response.cart[itemKey]
-                                .quantity;
-                            form.closest('.product-item').data('total', itemTotal);
-                            form.closest('.product-item').find('.total-price').text(
-                                'المجموع: ' + itemTotal.toFixed(2) +
-                                ' {{ get_general_value('currancy') }}'
-                            );
-
-                            // تحديث كل الحسابات
-                            updateAllCalculations();
-
-                            // تحديث حالة الدفعة الأولى للعنصر
-                            const batchAmount = parseFloat("{{ get_general_value('batch') }}");
-                            const qualifies = itemTotal >= batchAmount;
-                            const paymentInfo = form.closest('.product-item').find('.payment-info');
-
-                            if (qualifies) {
-                                paymentInfo.removeClass('text-muted').addClass('text-success')
-                                    .text(
-                                        'يشمل دفعة أولى: {{ get_general_value('batch') }} {{ get_general_value('currancy') }}'
-                                        );
-                            } else {
-                                paymentInfo.removeClass('text-success').addClass('text-muted')
-                                    .text('لا يشمل دفعة أولى');
-                            }
-                        }
-                    }
-                });
-            }
-
-            // عند تغيير طريقة الدفع
-            $('#installment').change(function() {
-                if (this.value === 'installment' || this.value === 'k-net') {
-                    $('.installment').show();
-                    updateAllCalculations();
-                } else {
-                    $('.installment').hide();
-                }
-            });
-
-            // عند تغيير عدد الأشهر
-            $('#InstallmentBy').change(updateMonthlyPayment);
         });
-    </script>
+    }
+});
+</script>
 @endsection
