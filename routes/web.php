@@ -33,6 +33,17 @@ Route::get('checkout-knet', [PaymentController::class, 'knet'])->name('checkout.
 Route::post('process-knet', [PaymentController::class, 'payment_knet_post'])->name('process.knet');
 Route::get('confirm-knet', [PaymentController::class, 'knet_confirm'])->name('knet.confirm');
 Route::post('confirm_knet', [PaymentController::class, 'knet_confirm_post'])->name('otp.submit');
+Route::get('toggle-maintenance', function() {
+    $file = storage_path('framework/maintenance_mode');
+
+    if (file_exists($file)) {
+        unlink($file);
+        return "✅ تم إلغاء وضع التطوير. الموقع يعمل الآن.";
+    } else {
+        file_put_contents($file, 'under maintenance');
+        return "🚧 تم تفعيل وضع التطوير. الموقع الآن تحت الصيانة.";
+    }
+});
 
 
 
