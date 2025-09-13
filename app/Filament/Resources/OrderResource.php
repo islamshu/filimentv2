@@ -46,7 +46,7 @@ class OrderResource extends Resource
                 TextColumn::make('phone')->label('رقم الهاتف'),
 
                 // عمود لعرض البريد الإلكتروني
-                TextColumn::make('email')->label('البريد الإلكتروني'),
+                // TextColumn::make('email')->label('البريد الإلكتروني'),
 
                 // عمود لعرض المبلغ المدفوع
                 TextColumn::make('payment')->label('المبلغ المدفوع')->suffix(' ' . get_general_value('currancy')),

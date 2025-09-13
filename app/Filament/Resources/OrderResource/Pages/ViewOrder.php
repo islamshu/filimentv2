@@ -34,7 +34,7 @@ class ViewOrder extends ViewRecord
                         TextEntry::make('code')->label('رمز الطلب'),
                         TextEntry::make('name')->label('الاسم'),
                         TextEntry::make('phone')->label('رقم الهاتف'),
-                        TextEntry::make('email')->label('البريد الإلكتروني'),
+                        // TextEntry::make('email')->label('البريد الإلكتروني'),
                         TextEntry::make('location')->label('الموقع'),
                         TextEntry::make('payment')->label('المبلغ')
                             ->suffix(' ' . get_general_value('currancy')),

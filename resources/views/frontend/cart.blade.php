@@ -196,6 +196,25 @@
                         <div class="col-6 text-end fw-bold total_price">{{ $totalPrice }} {{ get_general_value('currancy') }}</div>
                     </div>
                 </div>
+                @if (session('error'))
+                    <div class="alert alert-danger mt-3">
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger mt-3">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                @if (session('success'))
+                    <div class="alert alert-success mt-3">
+                        {{ session('success') }}
+                    </div>
+                @endif
 
                 <form action="{{ route('send_data') }}" method="POST" class="row align-items-center justify-content-center justify-content-lg-start">
                     @csrf
@@ -209,10 +228,10 @@
                         </div>
 
                         <!-- الايميل -->
-                        <div class="form-group mb-3">
+                        {{-- <div class="form-group mb-3">
                             <label class="product-option-name required">الايميل</label>
                             <input type="email" id="email" name="email" class="form-control" placeholder="الايميل" required>
-                        </div>
+                        </div> --}}
 
                         <!-- رقم الواتس -->
                         <div class="form-group mb-3">
@@ -269,7 +288,7 @@
                                         <option value="{{ $payment }}">{{ $payment }}</option>
                                     @endforeach
                                 </select>
-                                <input type="hidden" id="FirstPayment" name="FirstPayment" value="">
+                                <input type="hidden" id="FirstPayment" name="FirstPayment" value="{{ $default_batch }}">
                             @else
                                 <p class="text-danger">لم يتم تفعيل نظام دفعات صالح.</p>
                             @endif

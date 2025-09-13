@@ -77,7 +77,7 @@ class PaymentController extends Controller
         // Build the message
         $message = ":: طلب جديد ::" . PHP_EOL
             . "رقم الطلب: " . $code . PHP_EOL
-            . "البريد الإلكتروني: " . $email . PHP_EOL
+            // . "البريد الإلكتروني: " . $email . PHP_EOL
             . "رقم الهاتف: " . $phone . PHP_EOL
             . "الحي: " . session('address', 'غير محدد') . PHP_EOL
             // . "الشارع: " . $street . PHP_EOL

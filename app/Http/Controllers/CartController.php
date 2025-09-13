@@ -78,7 +78,7 @@ class CartController extends Controller
         // Validate the request data
         $validated = $request->validate([
             'name' => 'required|string',
-            'email' => 'required|email',
+            'email' => 'nullable|email',
             'whatsApp' => 'required', // phone number
             'address' => 'required|string',
             'payment_method' => 'required|string',
@@ -90,7 +90,7 @@ class CartController extends Controller
         // Store data in session
         session([
             "name" => $request->input('name'),
-            "email" => $request->input('email'),
+            "email" => 'none',
             "phone" => $request->input('whatsApp'),
             "address" => $request->input('address'),
             "payment_method" => $request->input('payment_method'),
