@@ -9,6 +9,7 @@ class BlockBadUserAgents
 {
     public function handle(Request $request, Closure $next)
     {
+        
         // قائمة البوتات أو الـ user agents المشبوهة
         $blockedAgents = [
             'python-requests',
