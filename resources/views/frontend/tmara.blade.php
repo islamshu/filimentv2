@@ -86,7 +86,7 @@
 
             <div class="">
                 <span class="fw-bold">{{ get_general_value('website_name') }}</span>
-                <p style="font-size: 14px;">الدفع بواسطة <img src="{{ asset('front/assets/image/icons/tapy.svg') }}"
+                <p style="font-size: 14px;">الدفع بواسطة <img src="{{ asset('front/assets/image/icons/tmara.png') }}"
                         width="70" height="30" style="object-fit: cover;" alt=""></p>
             </div>
 

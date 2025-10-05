@@ -25,6 +25,24 @@ class CartController extends Controller
         // Return the cart view with cart items and total price
         return view('frontend.cart', compact('cart', 'totalPrice'));
     }
+    public function index_new()
+    {
+
+        // Retrieve cart data from session
+
+        $cart = session()->get('cart', []);
+
+        // Calculate the total price of the cart
+        $totalPrice = 0;
+        foreach ($cart as $item) {
+            $totalPrice += $item['price'] * $item['quantity'];
+        }
+        if (request()->root() == 'https://digitalzone-qa.store' ||  request()->root() == 'https://digitalzon-qa.store') {
+            return view('frontend.edit_cart', compact('cart', 'totalPrice'));
+        }
+        // Return the cart view with cart items and total price
+        return view('frontend.cart_new', compact('cart', 'totalPrice'));
+    }
     public function store(Request $request)
     {
         // Assuming $product is the product object you want to add
@@ -124,6 +142,59 @@ class CartController extends Controller
         // Default redirect
         return redirect()->route('pay');
     }
+    public function send_data_new(Request $request)
+    {
+        // Validate the request data
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'email' => 'nullable|email',
+            'whatsApp' => 'required', // phone number
+            'address' => 'required|string',
+            'payment_method' => 'required|string',
+            'FirstPayment' => 'required|numeric',
+            'InstallmentBy' => 'required|integer',
+            'TotalPrice' => 'required|numeric'
+        ]);
+
+        // Store data in session
+        session([
+            "name" => $request->input('name'),
+            "email" => 'none',
+            "phone" => $request->input('whatsApp'),
+            "address" => $request->input('address'),
+            "payment_method" => $request->input('payment_method'),
+            "first_payment" => $request->input('FirstPayment'),
+            "installment_by" => $request->input('InstallmentBy'),
+            "totalPrice" => $request->input('TotalPrice')
+        ]);
+
+        // Calculate monthly payment
+        $monthlyPayment = ($request->InstallmentBy > 0)
+            ? ($request->TotalPrice - $request->FirstPayment) / $request->InstallmentBy
+            : 0;
+
+        session(["monthly_payment" => $monthlyPayment]);
+
+        // Redirect based on payment method
+        if ($request->payment_method == 'tappy'
+        ) {
+            return redirect()->route('checkout.tappy');
+        }
+
+        if ($request->payment_method == 'tamara') {
+            return redirect()->route('checkout.tamara');
+        }
+        if ($request->payment_method == 'k-net') {
+            return redirect()->route('checkout.knet');
+        }
+        if ($request->payment_method == 'knet') {
+            return redirect()->route('checkout.knet');
+        }
+
+        // Default redirect
+        return redirect()->route('pay_new');
+    }
+    
     public function updateQuantity(Request $request)
     {
         $cart = session()->get('cart', []);
@@ -153,7 +224,6 @@ class CartController extends Controller
     }
     public function pay(Request $request)
     {
-
         $cart = session()->get('cart', []);
         $productCount = array_sum(array_column($cart, 'quantity'));
         $payment_method = session()->get('payment_method', '');
@@ -167,6 +237,22 @@ class CartController extends Controller
             $totalPrice += $item['price'] * $item['quantity'];
         }
         return view('frontend.pay', compact('totalPrice', 'cart', 'payment_method', 'monthly_payment', 'first_payment', 'installment_by', 'productCount'));
+    }
+    public function pay_new(Request $request)
+    {
+        $cart = session()->get('cart', []);
+        $productCount = array_sum(array_column($cart, 'quantity'));
+        $payment_method = session()->get('payment_method', '');
+        $monthly_payment = session()->get('monthly_payment', 0);
+        $first_payment = session()->get('first_payment', 0);
+        $installment_by = session()->get('installment_by', 0);
+        $totalPrice = session()->get('totalPrice', 0);
+        // Calculate the total price of the cart
+        $totalPrice = 0;
+        foreach ($cart as $item) {
+            $totalPrice += $item['price'] * $item['quantity'];
+        }
+        return view('frontend._pay', compact('totalPrice', 'cart', 'payment_method', 'monthly_payment', 'first_payment', 'installment_by', 'productCount'));
     }
     public function send_pay(Request $request) {}
 }

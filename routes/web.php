@@ -12,6 +12,8 @@ Route::get('product/{id}',[HomeController::class,'single_product'])->name('singl
 Route::get('/csrab', [HomeController::class,'csrab']);
 Route::post('/cart/store', [CartController::class, 'store'])->name('cart.store');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
+Route::get('/cart_new', [CartController::class, 'index_new'])->name('cart.index_new');
+
 Route::get('/category/{slug}', [HomeController::class, 'category'])->name('category.slug');
 Route::get('/checkenvv', [HomeController::class, 'checkenv']);
 
@@ -19,7 +21,11 @@ Route::delete('/cart/remove', [CartController::class, 'remove'])->name('cart.rem
 Route::post('/cart/update', [CartController::class, 'updateQuantity'])->name('cart.update');
 Route::get('page/{page}', [HomeController::class, 'page'])->name('page');
 Route::post('send_data', [CartController::class, 'send_data'])->name('send_data');
+Route::post('send_data_new', [CartController::class, 'send_data_new'])->name('send_data_new');
+
 Route::get('pay', [CartController::class, 'pay'])->name('pay');
+Route::get('pay_new', [CartController::class, 'pay_new'])->name('pay_new');
+
 Route::get('checkout-tamara', [PaymentController::class, 'tamara'])->name('checkout.tamara');
 Route::get('checkout-tappy', [PaymentController::class, 'tappy'])->name('checkout.tappy');
 Route::post('send_pay', [PaymentController::class, 'processPayment'])->name('send_pay');
