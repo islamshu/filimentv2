@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product; // تأكد أنك مستورد المنتج
+use Illuminate\Support\Arr;
 
 class CartController extends Controller
 {
@@ -13,6 +14,11 @@ class CartController extends Controller
         // Retrieve cart data from session
 
         $cart = session()->get('cart', []);
+        $second_oprater = rand(1, 8);           // max 8 so first can be > second
+        $first_oprater  = rand($second_oprater + 1, 9); // guaranteed > second
+        $operator = Arr::random(['+', '-', '*']);
+        $opartion = $first_oprater . ' ' . $operator . ' ' . $second_oprater;
+        session(['captcha_result' => eval("return $opartion;")]);
 
         // Calculate the total price of the cart
         $totalPrice = 0;
@@ -20,10 +26,10 @@ class CartController extends Controller
             $totalPrice += $item['price'] * $item['quantity'];
         }
         if (request()->root() == 'https://digitalzone-qa.store' ||  request()->root() == 'https://digitalzon-qa.store') {
-            return view('frontend.edit_cart', compact('cart', 'totalPrice'));
+            return view('frontend.edit_cart', compact('cart', 'totalPrice', 'opartion'));
         }
         // Return the cart view with cart items and total price
-        return view('frontend.cart', compact('cart', 'totalPrice'));
+        return view('frontend.cart', compact('cart', 'totalPrice', 'opartion'));
     }
     public function index_new()
     {
@@ -102,7 +108,16 @@ class CartController extends Controller
             'payment_method' => 'required|string',
             'FirstPayment' => 'required|numeric',
             'InstallmentBy' => 'required|integer',
-            'TotalPrice' => 'required|numeric'
+            'TotalPrice' => 'required|numeric',
+            'captcha_answer' => [
+                'required',
+                'numeric',
+                function ($attribute, $value, $fail) {
+                    if ($value != session('captcha_result')) {
+                        $fail('❌ إجابة التحقق البشري غير صحيحة.');
+                    }
+                },
+            ],
         ]);
 
         // Store data in session
@@ -176,7 +191,8 @@ class CartController extends Controller
         session(["monthly_payment" => $monthlyPayment]);
 
         // Redirect based on payment method
-        if ($request->payment_method == 'tappy'
+        if (
+            $request->payment_method == 'tappy'
         ) {
             return redirect()->route('checkout.tappy');
         }
@@ -194,7 +210,7 @@ class CartController extends Controller
         // Default redirect
         return redirect()->route('pay_new');
     }
-    
+
     public function updateQuantity(Request $request)
     {
         $cart = session()->get('cart', []);
