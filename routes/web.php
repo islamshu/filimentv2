@@ -22,7 +22,8 @@ Route::post('/cart/update', [CartController::class, 'updateQuantity'])->name('ca
 Route::get('page/{page}', [HomeController::class, 'page'])->name('page');
 Route::post('send_data', [CartController::class, 'send_data'])->name('send_data');
 Route::post('send_data_new', [CartController::class, 'send_data_new'])->name('send_data_new');
-
+Route::get('/captcha/token', [CartController::class, 'generateToken'])->name('captcha.token');
+Route::get('/captcha/image', [CartController::class, 'image'])->name('captcha.image');
 Route::get('pay', [CartController::class, 'pay'])->name('pay');
 Route::get('pay_new', [CartController::class, 'pay_new'])->name('pay_new');
 

@@ -231,10 +231,10 @@
 
                         <!-- الاسم -->
                         <div class="form-group mb-3">
-    <label class="product-option-name required">الاسم كاملا</label>
-    <input type="text" id="fullName" name="name" class="form-control"
-        placeholder="الاسم كاملا" value="{{ old('name') }}" required>
-</div>
+                            <label class="product-option-name required">الاسم كاملا</label>
+                            <input type="text" id="fullName" name="name" class="form-control"
+                                placeholder="الاسم كاملا" value="{{ old('name') }}" required>
+                        </div>
 
 
                         <!-- الايميل -->
@@ -244,35 +244,41 @@
                         </div> --}}
 
                         <!-- رقم الواتس -->
-<div class="form-group mb-3">
-    <label class="product-option-name required">رقم الواتس</label>
-    <input type="text" id="WhatsApp" name="whatsApp" class="form-control"
-        placeholder="رقم الواتس" value="{{ old('whatsApp') }}" required>
-</div>
+                        <div class="form-group mb-3">
+                            <label class="product-option-name required">رقم الواتس</label>
+                            <input type="text" id="WhatsApp" name="whatsApp" class="form-control"
+                                placeholder="رقم الواتس" value="{{ old('whatsApp') }}" required>
+                        </div>
 
-<!-- العنوان -->
-<div class="form-group mb-3">
-    <label class="product-option-name required">العنوان كاملا</label>
-    <input type="text" id="address" name="address" class="form-control"
-        placeholder="العنوان كاملا" value="{{ old('address') }}" required>
-</div>
+                        <!-- العنوان -->
+                        <div class="form-group mb-3">
+                            <label class="product-option-name required">العنوان كاملا</label>
+                            <input type="text" id="address" name="address" class="form-control"
+                                placeholder="العنوان كاملا" value="{{ old('address') }}" required>
+                        </div>
 
                         <!-- طريقة الدفع -->
                         <div class="form-group mb-3">
-    <label class="product-option-name required">طريقة الدفع</label>
-    <select class="form-control" id="installment" name="payment_method" required>
-        <option value="" disabled {{ old('payment_method') ? '' : 'selected' }}>اختر</option>
-        <option value="all" {{ old('payment_method') == 'all' ? 'selected' : '' }}>كامل</option>
-        <option value="installment" {{ old('payment_method') == 'installment' ? 'selected' : '' }}>تقسيط</option>
-        @if (get_general_value('tappy_tamara_payment') == 'on')
-            <option value="tappy" {{ old('payment_method') == 'tappy' ? 'selected' : '' }}>تابي</option>
-            <option value="tamara" {{ old('payment_method') == 'tamara' ? 'selected' : '' }}>تمارا</option>
-        @endif
-        @if (get_general_value('kent_payment') == 'on')
-            <option value="k-net" {{ old('payment_method') == 'k-net' ? 'selected' : '' }}>كي نت</option>
-        @endif
-    </select>
-</div>
+                            <label class="product-option-name required">طريقة الدفع</label>
+                            <select class="form-control" id="installment" name="payment_method" required>
+                                <option value="" disabled {{ old('payment_method') ? '' : 'selected' }}>اختر
+                                </option>
+                                <option value="all" {{ old('payment_method') == 'all' ? 'selected' : '' }}>كامل
+                                </option>
+                                <option value="installment"
+                                    {{ old('payment_method') == 'installment' ? 'selected' : '' }}>تقسيط</option>
+                                @if (get_general_value('tappy_tamara_payment') == 'on')
+                                    <option value="tappy" {{ old('payment_method') == 'tappy' ? 'selected' : '' }}>تابي
+                                    </option>
+                                    <option value="tamara" {{ old('payment_method') == 'tamara' ? 'selected' : '' }}>تمارا
+                                    </option>
+                                @endif
+                                @if (get_general_value('kent_payment') == 'on')
+                                    <option value="k-net" {{ old('payment_method') == 'k-net' ? 'selected' : '' }}>كي نت
+                                    </option>
+                                @endif
+                            </select>
+                        </div>
 
                         @php
                             $paymentSettings = App\Models\PaymentSettings::first();
@@ -283,61 +289,60 @@
                         @endphp
 
                         <!-- المجموع الكلي -->
-<div class="form-group mb-3 installment">
-    <label class="product-option-name required">المجموع الكلي</label>
-    <input value="{{ old('TotalPrice', $totalPrice) }}" id="TotalPrice" name="TotalPrice" class="form-control"
-        type="number" readonly>
-</div>
+                        <div class="form-group mb-3 installment">
+                            <label class="product-option-name required">المجموع الكلي</label>
+                            <input value="{{ old('TotalPrice', $totalPrice) }}" id="TotalPrice" name="TotalPrice"
+                                class="form-control" type="number" readonly>
+                        </div>
                         <!-- الدفعة الأولى -->
-<div class="form-group mb-3 installment">
-    <label class="product-option-name required">الدفعة الأولى</label>
-    @if ($isCustom)
-        <input value="{{ old('FirstPayment', $default_batch) }}" min="0" readonly id="FirstPayment"
-            name="FirstPayment" class="form-control" type="number">
-    @elseif ($isMultiple && count($multiple_payments) > 0)
-        <select id="FirstPaymentSelect" class="form-control">
-            <option value="">اختر قيمة الدفعة</option>
-            @foreach ($multiple_payments as $payment)
-                <option value="{{ $payment }}" {{ old('FirstPayment') == $payment ? 'selected' : '' }}>
-                    {{ $payment }}
-                </option>
-            @endforeach
-        </select>
-        <input type="hidden" id="FirstPayment" name="FirstPayment"
-            value="{{ old('FirstPayment', $default_batch) }}">
-    @else
-        <p class="text-danger">لم يتم تفعيل نظام دفعات صالح.</p>
-    @endif
-</div>
+                        <div class="form-group mb-3 installment">
+                            <label class="product-option-name required">الدفعة الأولى</label>
+                            @if ($isCustom)
+                                <input value="{{ old('FirstPayment', $default_batch) }}" min="0" readonly
+                                    id="FirstPayment" name="FirstPayment" class="form-control" type="number">
+                            @elseif ($isMultiple && count($multiple_payments) > 0)
+                                <select id="FirstPaymentSelect" class="form-control">
+                                    <option value="">اختر قيمة الدفعة</option>
+                                    @foreach ($multiple_payments as $payment)
+                                        <option value="{{ $payment }}"
+                                            {{ old('FirstPayment') == $payment ? 'selected' : '' }}>
+                                            {{ $payment }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <input type="hidden" id="FirstPayment" name="FirstPayment"
+                                    value="{{ old('FirstPayment', $default_batch) }}">
+                            @else
+                                <p class="text-danger">لم يتم تفعيل نظام دفعات صالح.</p>
+                            @endif
+                        </div>
                         <!-- عدد أشهر التقسيط -->
                         <div class="form-group mb-3 installment">
-    <label class="product-option-name required">الرجاء تحديد عدد شهور التقسيط</label>
-    <select name="InstallmentBy" id="InstallmentBy" class="form-control">
-        @for ($i = 1; $i <= 24; $i++)
-            <option value="{{ $i }}" {{ old('InstallmentBy') == $i ? 'selected' : '' }}>
-                {{ $i }} شهر
-            </option>
-        @endfor
-    </select>
-</div>
+                            <label class="product-option-name required">الرجاء تحديد عدد شهور التقسيط</label>
+                            <select name="InstallmentBy" id="InstallmentBy" class="form-control">
+                                @for ($i = 1; $i <= 24; $i++)
+                                    <option value="{{ $i }}"
+                                        {{ old('InstallmentBy') == $i ? 'selected' : '' }}>
+                                        {{ $i }} شهر
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
 
                         <!-- الدفعة الشهرية -->
                         <div class="form-group mb-3 installment" id="MonthlyPaymentLi" style="display:none;">
                             <label class="product-option-name required">الدفعة الشهرية</label>
-                            <input value="0" readonly id="MonthlyPayment" value="{{old('MonthlyPayment')}}" name="MonthlyPayment"
-                                class="form-control">
+                            <input value="0" readonly id="MonthlyPayment" value="{{ old('MonthlyPayment') }}"
+                                name="MonthlyPayment" class="form-control">
                         </div>
 
-                        @if (isset($opartion))
-    <div class="captcha-box mx-auto mt-4">
-        <h6 class="text-primary fw-bold mb-3">تحقق أنك إنسان 🤖</h6>
-        <div class="fs-4 mb-3">
-            <strong>{{ $opartion }} = ?</strong>
-        </div>
-        <input type="text" name="captcha_answer" class="form-control mb-3 text-center"
-            placeholder="أدخل الإجابة الصحيحة" value="{{ old('captcha_answer') }}" required>
-    </div>
-@endif
+                        <div class="captcha-container">
+                            <img src="{{ route('captcha.image') }}?t={{ session('captcha_token') }}" id="captchaImage">
+                            <button type="button" id="refreshCaptcha">↻</button>
+                        </div>
+                        <input type="text" name="captcha_answer" placeholder="أدخل الأحرف الظاهرة" required>
+                        <input type="hidden" name="captcha_token" value="{{ session('captcha_token') }}">
+
 
 
                         <!-- زر الإرسال -->
@@ -438,4 +443,34 @@
             toggleInstallmentFields();
         });
     </script>
+    <script>
+        document.getElementById('refreshCaptcha').addEventListener('click', function() {
+            fetch('{{ route('captcha.token') }}')
+                .then(res => res.json())
+                .then(data => {
+                    document.querySelector('input[name=captcha_token]').value = data.token;
+                    document.getElementById('captchaImage').src = '{{ route('captcha.image') }}?t=' + data
+                        .token + '&r=' + Date.now();
+                });
+        });
+    </script>
+    <script>
+    function reloadCaptcha() {
+        fetch('{{ route('captcha.token') }}')
+            .then(res => res.json())
+            .then(data => {
+                document.querySelector('input[name=captcha_token]').value = data.token;
+                document.getElementById('captchaImage').src = '{{ route('captcha.image') }}?t=' + data.token + '&r=' + Date.now();
+            });
+    }
+
+    // عند الضغط على زر التحديث
+    document.getElementById('refreshCaptcha').addEventListener('click', reloadCaptcha);
+
+    // عند وجود أي خطأ أو رسالة خطأ في الجلسة، يتم إعادة تحميل الكابتشا تلقائيًا
+    @if(session('error') || $errors->any())
+        reloadCaptcha();
+    @endif
+</script>
+
 @endsection

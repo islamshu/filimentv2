@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product; // تأكد أنك مستورد المنتج
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Response;
 
 class CartController extends Controller
 {
@@ -99,31 +103,71 @@ class CartController extends Controller
     }
     public function send_data(Request $request)
     {
-        // Validate the request data
+        $key = 'submit|' . $request->ip();
+
+        // حد لمحاولات الإرسال
+        if (RateLimiter::tooManyAttempts($key, 10)) {
+            return back()->with('error', 'محاولات كثيرة، حاول لاحقًا.');
+        }
+
+        // التحقق من الحقول الأساسية و CAPTCHA
         $validated = $request->validate([
             'name' => 'required|string',
             'email' => 'nullable|email',
-            'whatsApp' => 'required', // phone number
+            'whatsApp' => 'required',
             'address' => 'required|string',
             'payment_method' => 'required|string',
             'FirstPayment' => 'required|numeric',
             'InstallmentBy' => 'required|integer',
             'TotalPrice' => 'required|numeric',
-            'captcha_answer' => [
-                'required',
-                'numeric',
-                function ($attribute, $value, $fail) {
-                    if ($value != session('captcha_result')) {
-                        $fail('❌ إجابة التحقق البشري غير صحيحة.');
-                    }
-                },
-            ],
+            // honeypot
+            'hp_field' => 'nullable',
+            // CAPTCHA
+            'captcha_answer' => 'required|string',
+            'captcha_token' => 'required|string',
         ]);
 
-        // Store data in session
+        // honeypot للتحقق من الروبوتات
+        if ($request->filled('hp_field')) {
+            RateLimiter::hit($key);
+            return back()->withInput()->with('error', 'محاولة مشبوهة.');
+        }
+
+        // التحقق من وجود token
+        $token = $request->input('captcha_token');
+        if (!session('captcha_token') || session('captcha_token') !== $token) {
+            RateLimiter::hit($key);
+            return back()->withInput()->with('error', 'رمز التحقق غير صحيح، أعد تحميل الصفحة.');
+        }
+
+        // التحقق من استخدام CAPTCHA مسبقًا
+        if (session('captcha_used')) {
+            RateLimiter::hit($key);
+            return back()->withInput()->with('error', 'تم استخدام رمز التحقق هذه المرة.');
+        }
+
+        // التحقق من نص CAPTCHA
+        $expectedText = session('captcha_text', '');
+        $answer = strtoupper(preg_replace('/\s+/', '', $request->input('captcha_answer')));
+        if ($answer !== strtoupper($expectedText)) {
+            RateLimiter::hit($key);
+            return back()->withInput()->with('error', 'إجابة التحقق غير صحيحة.');
+        }
+
+        // optional: التحقق من وقت استكمال النموذج
+        $startTime = session('form_start_time') ?? now();
+        $timeTaken = now()->diffInMilliseconds($startTime);
+        
+
+        // كل شيء جيد، تنظيف CAPTCHA ومحاولات الروبوت
+        session(['captcha_used' => true]);
+        session()->forget(['captcha_token', 'captcha_text', 'form_start_time']);
+        RateLimiter::clear($key);
+
+        // حفظ بيانات الطلب في الجلسة
         session([
             "name" => $request->input('name'),
-            "email" => 'none',
+            "email" => $request->input('email', 'none'),
             "phone" => $request->input('whatsApp'),
             "address" => $request->input('address'),
             "payment_method" => $request->input('payment_method'),
@@ -132,31 +176,27 @@ class CartController extends Controller
             "totalPrice" => $request->input('TotalPrice')
         ]);
 
-        // Calculate monthly payment
+        // حساب الدفعة الشهرية
         $monthlyPayment = ($request->InstallmentBy > 0)
             ? ($request->TotalPrice - $request->FirstPayment) / $request->InstallmentBy
             : 0;
 
         session(["monthly_payment" => $monthlyPayment]);
 
-        // Redirect based on payment method
-        if ($request->payment_method == 'tappy') {
-            return redirect()->route('checkout.tappy');
+        // إعادة التوجيه حسب طريقة الدفع
+        switch ($request->payment_method) {
+            case 'tappy':
+                return redirect()->route('checkout.tappy');
+            case 'tamara':
+                return redirect()->route('checkout.tamara');
+            case 'k-net':
+            case 'knet':
+                return redirect()->route('checkout.knet');
+            default:
+                return redirect()->route('pay');
         }
-
-        if ($request->payment_method == 'tamara') {
-            return redirect()->route('checkout.tamara');
-        }
-        if ($request->payment_method == 'k-net') {
-            return redirect()->route('checkout.knet');
-        }
-        if ($request->payment_method == 'knet') {
-            return redirect()->route('checkout.knet');
-        }
-
-        // Default redirect
-        return redirect()->route('pay');
     }
+
     public function send_data_new(Request $request)
     {
         // Validate the request data
@@ -271,4 +311,59 @@ class CartController extends Controller
         return view('frontend._pay', compact('totalPrice', 'cart', 'payment_method', 'monthly_payment', 'first_payment', 'installment_by', 'productCount'));
     }
     public function send_pay(Request $request) {}
+    public function generateToken()
+    {
+        $text = Str::upper(Str::random(5)); // 5 أحرف عشوائية
+        $token = Str::random(20); // Token للحماية
+
+        Session::put('captcha_text', $text);
+        Session::put('captcha_token', $token);
+        Session::put('captcha_used', false);
+
+        return response()->json([
+            'token' => $token,
+        ]);
+    }
+
+    // توليد صورة CAPTCHA ديناميكية
+    public function image(Request $request)
+    {
+        $text = Session::get('captcha_text', 'ERROR');
+        $width = 150;
+        $height = 50;
+
+        $image = imagecreatetruecolor($width, $height);
+
+        // خلفية ملونة بسيطة
+        $bgColor = imagecolorallocate($image, 240, 240, 240);
+        imagefilledrectangle($image, 0, 0, $width, $height, $bgColor);
+
+        // رسم بعض الخطوط العشوائية للتعقيد
+        for ($i = 0; $i < 5; $i++) {
+            $lineColor = imagecolorallocate($image, rand(100, 200), rand(100, 200), rand(100, 200));
+            imageline($image, rand(0, $width), rand(0, $height), rand(0, $width), rand(0, $height), $lineColor);
+        }
+
+        // اللون الأسود للنص
+        $textColor = imagecolorallocate($image, 0, 0, 0);
+
+        // استخدام فونت افتراضي
+        $fontSize = 5; // gd font
+        $x = 15;
+        $y = 15;
+
+        // كتابة كل حرف بميلان بسيط
+        for ($i = 0; $i < strlen($text); $i++) {
+            imagestring($image, $fontSize, $x + ($i * 20), $y + rand(-5, 5), $text[$i], $textColor);
+        }
+
+        // إرسال الصورة مباشرة
+        ob_start();
+        imagepng($image);
+        $contents = ob_get_clean();
+
+        imagedestroy($image);
+
+        return Response($contents)->header('Content-Type', 'image/png');
+    }
 }
