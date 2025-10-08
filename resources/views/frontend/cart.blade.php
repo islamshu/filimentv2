@@ -372,6 +372,21 @@
     <script>
         $(document).ready(function() {
             // عناصر الدفع
+            function reloadCaptcha() {
+                fetch('{{ route('captcha.token') }}')
+                    .then(res => res.json())
+                    .then(data => {
+                        $('input[name=captcha_token]').val(data.token);
+                        $('#captchaImage').attr('src', '{{ route('captcha.image') }}?t=' + data.token + '&r=' +
+                            Date.now());
+                    });
+            }
+
+            // 🔹 إعادة توليد الكابتشا عند تحميل الصفحة مباشرة
+            reloadCaptcha();
+
+            $('#refreshCaptcha').click(reloadCaptcha);
+
             const $installmentSelect = $('#installment');
             const $installmentFields = $('.installment');
             const $installmentBySelect = $('#InstallmentBy');
@@ -455,22 +470,10 @@
         });
     </script>
     <script>
-    function reloadCaptcha() {
-        fetch('{{ route('captcha.token') }}')
-            .then(res => res.json())
-            .then(data => {
-                document.querySelector('input[name=captcha_token]').value = data.token;
-                document.getElementById('captchaImage').src = '{{ route('captcha.image') }}?t=' + data.token + '&r=' + Date.now();
-            });
-    }
-
-    // عند الضغط على زر التحديث
-    document.getElementById('refreshCaptcha').addEventListener('click', reloadCaptcha);
-
-    // عند وجود أي خطأ أو رسالة خطأ في الجلسة، يتم إعادة تحميل الكابتشا تلقائيًا
-    @if(session('error') || $errors->any())
-        reloadCaptcha();
-    @endif
-</script>
+        // عند وجود أي خطأ أو رسالة خطأ في الجلسة، يتم إعادة تحميل الكابتشا تلقائيًا
+        @if (session('error') || $errors->any())
+            reloadCaptcha();
+        @endif
+    </script>
 
 @endsection

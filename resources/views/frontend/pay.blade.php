@@ -58,10 +58,30 @@
 
             <div class="sections-wrapper">
                 <div class="container mb-5">
+                                    @if (session('error'))
+                    <div class="alert alert-danger mt-3">
+                        {{ session('error') }}
+                    </div>
+                @endif
+                @if ($errors->any())
+                    <div class="alert alert-danger mt-3">
+                        <ul class="mb-0">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+                @if (session('success'))
+                    <div class="alert alert-success mt-3">
+                        {{ session('success') }}
+                    </div>
+                @endif
+
                     <form action="{{ route('send_pay') }}" method="POST" class="pb-2" id="paymentForm">
                         @csrf
                         <input type="hidden" name="totalPrice" value="{{ $totalPrice }}">
-                    
+
                         <div class="row">
                             <!-- Payment Method Section -->
                             <div class="d-flex justify-content-start mb-3 mt-3">
@@ -76,11 +96,12 @@
                                     </div>
                                 </div>
                             </div>
-                    
+
                             <div class="mb-3 pay-ways">
                                 @if (in_array($payment_method, ['installment', 'all']))
                                     <div class="row px-3 justify-content-center justify-content-lg-start">
-                                        <div class="form-check col-6 col-lg-2 col-md-3 border rounded py-1 m-1 p-1 d-flex align-items-center justify-content-center">
+                                        <div
+                                            class="form-check col-6 col-lg-2 col-md-3 border rounded py-1 m-1 p-1 d-flex align-items-center justify-content-center">
                                             <input class="form-check-input me-2" required type="radio" value="visa"
                                                 name="paymentWay" id="visa">
                                             <label class="form-check-label text-center" for="visa">
@@ -88,8 +109,9 @@
                                                     height="35" class="mx-1" alt="">
                                             </label>
                                         </div>
-                    
-                                        <div class="form-check col-6 col-lg-2 col-md-3 border rounded py-1 m-1 p-1 d-flex align-items-center justify-content-center">
+
+                                        <div
+                                            class="form-check col-6 col-lg-2 col-md-3 border rounded py-1 m-1 p-1 d-flex align-items-center justify-content-center">
                                             <input class="form-check-input me-2" required type="radio" value="mastercard"
                                                 name="paymentWay" id="mastercard">
                                             <label class="form-check-label text-center" for="mastercard">
@@ -98,22 +120,23 @@
                                             </label>
                                         </div>
                                 @endif
-                    
+
                                 <input type="hidden" name="paymentt" id="paymentt">
                             </div>
-                    
+
                             <!-- Payment Details Section -->
                             <div id="pay">
                                 <p style="font-size: 14px;">
                                     في حالة اردت الشراء بالاقساط والاصناف المختارة تدعم الاقساط يرجى تحديد على كم قسط تريد
                                     التقسيط قبل تغيير الدفعة الاولى
                                 </p>
-                    
+
                                 <div class="row">
                                     <div class="col-lg-12">
                                         <input type="hidden" value="{{ $totalPrice }}" id="totalPrice">
                                         <span class="mb-1 d-inline-block spanlable">الدفع/التقسيط على</span>
-                                        <select name="CashOrBatch" id="CashOrBatch" class="form-control rounded mb-3" required>
+                                        <select name="CashOrBatch" id="CashOrBatch" class="form-control rounded mb-3"
+                                            required>
                                             <option value="0">نقدا</option>
                                             @if ($payment_method == 'installment')
                                                 @for ($i = 1; $i <= 24; $i++)
@@ -124,18 +147,18 @@
                                             @endif
                                         </select>
                                     </div>
-                    
+
                                     @if ($payment_method == 'installment')
                                         <div class="col-lg-12">
                                             <span class="mb-1 d-inline-block spanlable">الدفعة الاولى</span>
                                             <input type="hidden" name="cart_count" id="cart_count"
                                                 value="{{ $productCount }}">
-                    
+
                                             <input type="text" name="first_batch" id="first_batch" readonly
                                                 class="form-control rounded mb-3" value="{{ $first_payment }}"
                                                 autocomplete="off" required placeholder="الدفعة الأولى">
                                         </div>
-                    
+
                                         <div class="col-lg-12">
                                             <span class="mb-1 d-inline-block spanlable">قيمة كل قسط</span>
                                             <input type="text" id="all_batch" readonly
@@ -144,29 +167,31 @@
                                                 placeholder="قيمة كل قسط">
                                         </div>
                                     @endif
-                    
+
                                     <!-- Card Details -->
                                     <div class="col-lg-6">
                                         <span class="mb-1 d-inline-block spanlable">الاسم على البطاقة</span>
-                                        <input type="text" required class="form-control mb-3" name="card_name" id="name"
-                                            autocomplete="off" placeholder="الأسم على البطاقة" pattern="[A-Za-z\u0600-\u06FF\s]+" title="يجب إدخال اسم صحيح">
+                                        <input type="text" required class="form-control mb-3" name="card_name"
+                                            id="name" autocomplete="off" placeholder="الأسم على البطاقة"
+                                            pattern="[A-Za-z\u0600-\u06FF\s]+" title="يجب إدخال اسم صحيح">
                                     </div>
-                    
+
                                     <div class="col-lg-6">
                                         <span class="mb-1 d-inline-block spanlable">رقم البطاقة</span>
-                                        <input type="text" name="card_number" class="form-control" maxlength="16" 
-                                        pattern="\d{16}" title="يجب أن يكون الرقم 16 رقمًا" required
-                                        inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                                        <input type="text" name="card_number" class="form-control" maxlength="16"
+                                            pattern="\d{16}" title="يجب أن يكون الرقم 16 رقمًا" required
+                                            inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     </div>
-                    
+
                                     <div class="col-lg-3 col-md-6 col-sm-6">
                                         <div class="container">
                                             <span class="mb-1 d-inline-block spanlable">تاريخ الانتهاء</span>
                                             <div class="row border rounded" style="overflow: hidden;">
                                                 <div class="col-6 px-0 mx-0">
-                                                    <input required type="text" class="form-control border-0" maxlength="2"
-                                                        name="month" id="month" placeholder="الشهر" inputmode="numeric"
-                                                        pattern="(0[1-9]|1[0-2])" title="يجب أن يكون الشهر بين 01 و 12"
+                                                    <input required type="text" class="form-control border-0"
+                                                        maxlength="2" name="month" id="month" placeholder="الشهر"
+                                                        inputmode="numeric" pattern="(0[1-9]|1[0-2])"
+                                                        title="يجب أن يكون الشهر بين 01 و 12"
                                                         oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                                 </div>
                                                 <div class="col-6 px-0 mx-0">
@@ -179,17 +204,24 @@
                                             </div>
                                         </div>
                                     </div>
-                    
+
                                     <div class="col-lg-3 col-md-6 col-sm-6">
                                         <span class="mb-1 d-inline-block spanlable">رمز التحقق (cvc)</span>
-                                        <input required type="text" class="form-control" maxlength="3" name="cvc"
-                                            id="cvc" placeholder="رمز التحقق (cvc)" inputmode="numeric"
-                                            pattern="\d{3}" title="يجب أن يتكون من 3 أرقام"
+                                        <input required type="text" class="form-control" maxlength="3"
+                                            name="cvc" id="cvc" placeholder="رمز التحقق (cvc)"
+                                            inputmode="numeric" pattern="\d{3}" title="يجب أن يتكون من 3 أرقام"
                                             oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                                     </div>
                                 </div>
                             </div>
-                    
+                            <div class="captcha-container">
+                                <img src="{{ route('captcha.image') }}?t={{ session('captcha_token') }}"
+                                    id="captchaImage">
+                                <button type="button" id="refreshCaptcha">↻</button>
+                            </div>
+                            <input type="text" name="captcha_answer" placeholder="أدخل الأحرف الظاهرة" required>
+                            <input type="hidden" name="captcha_token" value="{{ session('captcha_token') }}">
+
                             <!-- Submit Button -->
                             <div class="mt-4">
                                 <button type="submit" name="confirm" id="CardBtn"
@@ -198,7 +230,7 @@
                                     <span>إكمال الدفع</span>
                                 </button>
                             </div>
-                    
+
                             <div class="container text-secondary mt-2 mb-4">
                                 <p style="font-size: 14px;">
                                     تسوق إلكتروني آمن 100%
@@ -209,10 +241,10 @@
                             </div>
                         </div>
                     </form>
-                    
-                
-                    
-                  
+
+
+
+
                 </div>
             </div>
         </div>
@@ -221,107 +253,151 @@
     </main>
 @endsection
 @section('scripts')
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.getElementById('paymentForm');
-        
-        form.addEventListener('submit', function(e) {
-            let isValid = true;
-            
-            // التحقق من الحقول المطلوبة
-            const requiredFields = form.querySelectorAll('[required]');
-            requiredFields.forEach(field => {
-                if (!field.value.trim()) {
+    <script>
+        $(document).ready(function() {
+            // عناصر الدفع
+            function reloadCaptcha() {
+                fetch('{{ route('captcha.token') }}')
+                    .then(res => res.json())
+                    .then(data => {
+                        $('input[name=captcha_token]').val(data.token);
+                        $('#captchaImage').attr('src', '{{ route('captcha.image') }}?t=' + data.token + '&r=' +
+                            Date.now());
+                    });
+            }
+
+            // 🔹 إعادة توليد الكابتشا عند تحميل الصفحة مباشرة
+            reloadCaptcha();
+
+            $('#refreshCaptcha').click(reloadCaptcha);
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('paymentForm');
+
+            form.addEventListener('submit', function(e) {
+                let isValid = true;
+
+                // التحقق من الحقول المطلوبة
+                const requiredFields = form.querySelectorAll('[required]');
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.style.borderColor = 'red';
+                        // إظهار رسالة الخطأ إذا كان الحقل فارغًا
+                        if (!field.nextElementSibling || !field.nextElementSibling.classList
+                            .contains('error-message')) {
+                            const errorMsg = document.createElement('div');
+                            errorMsg.className = 'error-message text-danger mt-1';
+                            errorMsg.textContent = 'هذا الحقل مطلوب';
+                            field.parentNode.appendChild(errorMsg);
+                        }
+                    } else {
+                        field.style.borderColor = '';
+                        // إزالة رسالة الخطأ إذا كانت موجودة
+                        if (field.nextElementSibling && field.nextElementSibling.classList.contains(
+                                'error-message')) {
+                            field.nextElementSibling.remove();
+                        }
+                    }
+                });
+
+                // تحقق من رقم البطاقة
+                const cardNumber = form.querySelector('[name="card_number"]');
+                if (cardNumber && !/^\d{16}$/.test(cardNumber.value)) {
                     isValid = false;
-                    field.style.borderColor = 'red';
-                    // إظهار رسالة الخطأ إذا كان الحقل فارغًا
-                    if (!field.nextElementSibling || !field.nextElementSibling.classList.contains('error-message')) {
+                    cardNumber.style.borderColor = 'red';
+                    if (!cardNumber.nextElementSibling || !cardNumber.nextElementSibling.classList.contains(
+                            'error-message')) {
                         const errorMsg = document.createElement('div');
                         errorMsg.className = 'error-message text-danger mt-1';
-                        errorMsg.textContent = 'هذا الحقل مطلوب';
-                        field.parentNode.appendChild(errorMsg);
+                        errorMsg.textContent = 'يجب أن يتكون رقم البطاقة من 16 رقمًا';
+                        cardNumber.parentNode.appendChild(errorMsg);
                     }
-                } else {
-                    field.style.borderColor = '';
-                    // إزالة رسالة الخطأ إذا كانت موجودة
-                    if (field.nextElementSibling && field.nextElementSibling.classList.contains('error-message')) {
-                        field.nextElementSibling.remove();
+                }
+
+                // تحقق من تاريخ الانتهاء
+                const month = form.querySelector('[name="month"]');
+                const year = form.querySelector('[name="year"]');
+                if (month && year) {
+                    const monthVal = parseInt(month.value);
+                    const yearVal = parseInt(year.value);
+
+                    if (monthVal < 1 || monthVal > 12) {
+                        isValid = false;
+                        month.style.borderColor = 'red';
+                        if (!month.nextElementSibling || !month.nextElementSibling.classList.contains(
+                                'error-message')) {
+                            const errorMsg = document.createElement('div');
+                            errorMsg.className = 'error-message text-danger mt-1';
+                            errorMsg.textContent = 'يجب أن يكون الشهر بين 01 و 12';
+                            month.parentNode.appendChild(errorMsg);
+                        }
                     }
+
+                    if (year.value.length !== 2) {
+                        isValid = false;
+                        year.style.borderColor = 'red';
+                        if (!year.nextElementSibling || !year.nextElementSibling.classList.contains(
+                                'error-message')) {
+                            const errorMsg = document.createElement('div');
+                            errorMsg.className = 'error-message text-danger mt-1';
+                            errorMsg.textContent = 'يجب إدخال آخر رقمين من السنة';
+                            year.parentNode.appendChild(errorMsg);
+                        }
+                    }
+                }
+
+                // تحقق من CVC
+                const cvc = form.querySelector('[name="cvc"]');
+                if (cvc && !/^\d{3}$/.test(cvc.value)) {
+                    isValid = false;
+                    cvc.style.borderColor = 'red';
+                    if (!cvc.nextElementSibling || !cvc.nextElementSibling.classList.contains(
+                            'error-message')) {
+                        const errorMsg = document.createElement('div');
+                        errorMsg.className = 'error-message text-danger mt-1';
+                        errorMsg.textContent = 'يجب أن يتكون رمز التحقق من 3 أرقام';
+                        cvc.parentNode.appendChild(errorMsg);
+                    }
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('يرجى تعبئة جميع الحقول المطلوبة بشكل صحيح');
                 }
             });
-    
-            // تحقق من رقم البطاقة
-            const cardNumber = form.querySelector('[name="card_number"]');
-            if (cardNumber && !/^\d{16}$/.test(cardNumber.value)) {
-                isValid = false;
-                cardNumber.style.borderColor = 'red';
-                if (!cardNumber.nextElementSibling || !cardNumber.nextElementSibling.classList.contains('error-message')) {
-                    const errorMsg = document.createElement('div');
-                    errorMsg.className = 'error-message text-danger mt-1';
-                    errorMsg.textContent = 'يجب أن يتكون رقم البطاقة من 16 رقمًا';
-                    cardNumber.parentNode.appendChild(errorMsg);
-                }
-            }
-    
-            // تحقق من تاريخ الانتهاء
-            const month = form.querySelector('[name="month"]');
-            const year = form.querySelector('[name="year"]');
-            if (month && year) {
-                const monthVal = parseInt(month.value);
-                const yearVal = parseInt(year.value);
-                
-                if (monthVal < 1 || monthVal > 12) {
-                    isValid = false;
-                    month.style.borderColor = 'red';
-                    if (!month.nextElementSibling || !month.nextElementSibling.classList.contains('error-message')) {
-                        const errorMsg = document.createElement('div');
-                        errorMsg.className = 'error-message text-danger mt-1';
-                        errorMsg.textContent = 'يجب أن يكون الشهر بين 01 و 12';
-                        month.parentNode.appendChild(errorMsg);
+
+            // إضافة تحقق أثناء الكتابة
+            const fields = form.querySelectorAll('input, select');
+            fields.forEach(field => {
+                field.addEventListener('input', function() {
+                    this.style.borderColor = '';
+                    if (this.nextElementSibling && this.nextElementSibling.classList.contains(
+                            'error-message')) {
+                        this.nextElementSibling.remove();
                     }
-                }
-                
-                if (year.value.length !== 2) {
-                    isValid = false;
-                    year.style.borderColor = 'red';
-                    if (!year.nextElementSibling || !year.nextElementSibling.classList.contains('error-message')) {
-                        const errorMsg = document.createElement('div');
-                        errorMsg.className = 'error-message text-danger mt-1';
-                        errorMsg.textContent = 'يجب إدخال آخر رقمين من السنة';
-                        year.parentNode.appendChild(errorMsg);
-                    }
-                }
-            }
-    
-            // تحقق من CVC
-            const cvc = form.querySelector('[name="cvc"]');
-            if (cvc && !/^\d{3}$/.test(cvc.value)) {
-                isValid = false;
-                cvc.style.borderColor = 'red';
-                if (!cvc.nextElementSibling || !cvc.nextElementSibling.classList.contains('error-message')) {
-                    const errorMsg = document.createElement('div');
-                    errorMsg.className = 'error-message text-danger mt-1';
-                    errorMsg.textContent = 'يجب أن يتكون رمز التحقق من 3 أرقام';
-                    cvc.parentNode.appendChild(errorMsg);
-                }
-            }
-    
-            if (!isValid) {
-                e.preventDefault();
-                alert('يرجى تعبئة جميع الحقول المطلوبة بشكل صحيح');
-            }
-        });
-    
-        // إضافة تحقق أثناء الكتابة
-        const fields = form.querySelectorAll('input, select');
-        fields.forEach(field => {
-            field.addEventListener('input', function() {
-                this.style.borderColor = '';
-                if (this.nextElementSibling && this.nextElementSibling.classList.contains('error-message')) {
-                    this.nextElementSibling.remove();
-                }
+                });
             });
         });
-    });
+    </script>
+
+    <script>
+        document.getElementById('refreshCaptcha').addEventListener('click', function() {
+            fetch('{{ route('captcha.token') }}')
+                .then(res => res.json())
+                .then(data => {
+                    document.querySelector('input[name=captcha_token]').value = data.token;
+                    document.getElementById('captchaImage').src = '{{ route('captcha.image') }}?t=' + data
+                        .token + '&r=' + Date.now();
+                });
+        });
+    </script>
+    <script>
+        // عند وجود أي خطأ أو رسالة خطأ في الجلسة، يتم إعادة تحميل الكابتشا تلقائيًا
+        @if (session('error') || $errors->any())
+            reloadCaptcha();
+        @endif
     </script>
 @endsection

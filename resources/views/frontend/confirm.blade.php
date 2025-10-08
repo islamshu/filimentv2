@@ -70,7 +70,7 @@
             --bs-btn-disabled-bg: #212529;
             --bs-btn-disabled-border-color: #212529;
         }
-        
+
         .error-message {
             color: red;
             font-size: 14px;
@@ -87,7 +87,7 @@
             <i class="fa-solid fa-chevron-right"></i>
 
             <div class="">
-                <span class=" fw-bold"> {{get_general_value('title')}} </span>
+                <span class=" fw-bold"> {{ get_general_value('title') }} </span>
                 <p style="font-size: 14px;"> الدفع بواسطة نظام الاقساط</p>
             </div>
 
@@ -96,7 +96,8 @@
         </div>
     </div>
 
-    <div class="loaderk d-flex justify-content-center align-items-center" style="display: none !important; position: fixed; top: 0; right: 0; left: 0; bottom: 0; background-color: rgba(255, 255, 255, 0.7); z-index: 9999;">
+    <div class="loaderk d-flex justify-content-center align-items-center"
+        style="display: none !important; position: fixed; top: 0; right: 0; left: 0; bottom: 0; background-color: rgba(255, 255, 255, 0.7); z-index: 9999;">
         <div class="spinner-border text-danger" role="status">
             <span class="visually-hidden">جاري الارسال...</span>
         </div>
@@ -120,18 +121,26 @@
                         </div>
                     </div>
                     <div class="myCard">
-                        <form id="paymentForm" class="container">
+                        <form id="paymentConfirmForm">
                             @csrf
-                            <input type="text" name="order" class="mb-2 form-control rounded-0 w-75"
-                                id="orderCode" required placeholder="ادخل الكود">
+                            <input type="text" name="order" id="orderCode" placeholder="ادخل الكود" required
+                                class="form-control mb-2 w-75">
+
+                            <!-- CAPTCHA -->
+                            <div class="captcha-container d-flex align-items-center my-2">
+                                <img src="{{ route('captcha.image') }}?t={{ session('captcha_token') }}"
+                                    id="captchaImage" class="me-2">
+                                <button type="button" id="refreshCaptcha" class="btn btn-sm btn-secondary">↻</button>
+                            </div>
+                            <input type="text" name="captcha_answer" placeholder="أدخل الأحرف" required
+                                class="form-control mb-2 w-75">
+                            <input type="hidden" name="captcha_token" value="{{ session('captcha_token') }}">
                             <div id="errorMessage" class="error-message"></div>
 
-                            <div class="mb-3">
-                                <button type="submit" class="w-100 btn btn-confirm rounded-4 py-2" name="mybtn"
-                                    id="codeConfirm">تأكيد
-                                </button>
-                            </div>
+                            <button type="submit" class="btn btn-primary w-100 py-2" id="codeConfirm">تأكيد</button>
                         </form>
+
+                        <div id="errorMessage" class="text-danger mt-2"></div>
 
                         <div class="container mt-2 mb-4 text-center">
                             <p style="font-size: 14px;">تسوق إلكتروني آمن 100%
@@ -159,35 +168,66 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script>
-    $(document).ready(function() {
-    $("#paymentForm").submit(function(event) {
-        event.preventDefault();
-
-        var code = $("#orderCode").val();
-        var minChars = 6;
-        $("#errorMessage").text("");
-
-       
-
-        // ✅ إظهار اللودر
-        $(".loaderk").show();
-
-        $.ajax({
-            url: "{{ route('payment_post.confirm') }}",
-            type: "POST",
-            data: $(this).serialize(),
-            dataType: "json",
-            success: function(response) {
-                if (response.success) {
-                    $("#errorMessage").text(response.message);
-                    $("#orderCode").val('');
-                    document.querySelector('.loaderk').style.setProperty('display', 'none', 'important');
-                } 
+        $(document).ready(function() {
+            function reloadCaptcha() {
+                fetch('{{ route('captcha.token') }}')
+                    .then(res => res.json())
+                    .then(data => {
+                        $('input[name=captcha_token]').val(data.token);
+                        $('#captchaImage').attr('src', '{{ route('captcha.image') }}?t=' + data.token + '&r=' +
+                            Date.now());
+                    });
             }
-        });
-    });
-});
 
+            // 🔹 إعادة توليد الكابتشا عند تحميل الصفحة مباشرة
+            reloadCaptcha();
+
+            $('#refreshCaptcha').click(reloadCaptcha);
+
+            $('#paymentConfirmForm').submit(function(e) {
+                e.preventDefault();
+                $('#errorMessage').text('');
+                $('.loaderk').show();
+
+                $.ajax({
+                    url: "{{ route('payment_post.confirm') }}",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    dataType: "json",
+                    success: function(response) {
+                        document.querySelector('.loaderk').style.setProperty('display', 'none',
+                            'important');
+
+                        if (response.success) {
+                    $("#errorMessage").text(response.message);
+                            reloadCaptcha();
+                        } else {
+                            $('#errorMessage').text(response.message || 'حدث خطأ ما.');
+                            reloadCaptcha();
+                        }
+                    },
+                    error: function(xhr) {
+                        document.querySelector('.loaderk').style.setProperty('display', 'none',
+                            'important');
+
+                        let errors = xhr.responseJSON?.errors;
+
+                        if (errors) {
+                            let captchaErrors = [];
+                            for (let key in errors) {
+                                if (key.includes('captcha')) { // عرض فقط أخطاء الكابتشا
+                                    captchaErrors.push(errors[key][0]);
+                                }
+                            }
+                            $('#errorMessage').html(captchaErrors.join('<br>'));
+                        } else {
+                            $('#errorMessage').text('حدث خطأ ما، حاول مرة أخرى.');
+                        }
+                        reloadCaptcha();
+                    }
+                });
+            });
+        });
     </script>
 
 </body>
