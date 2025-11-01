@@ -88,7 +88,7 @@ class CartController extends Controller
         ]);
 
         // Store data in session
-        session([
+        session(key: [
             "name" => $request->input('name'),
             "email" => 'none',
             "phone" => $request->input('whatsApp'),
