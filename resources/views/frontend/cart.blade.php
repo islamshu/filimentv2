@@ -323,6 +323,7 @@
                             <label class="product-option-name required">الدفعة الشهرية</label>
                             <input value="0" readonly id="MonthlyPayment" name="MonthlyPayment" class="form-control">
                         </div>
+                        @if(get_general_value('cart_captcha') == 'on')
 
                         <div class="captcha-container">
                             <img src="{{ route('captcha.image') }}?t={{ session('captcha_token') }}" id="captchaImage">
@@ -330,6 +331,7 @@
                         </div>
                         <input type="text" name="captcha_answer" placeholder="أدخل الأحرف الظاهرة" required>
                         <input type="hidden" name="captcha_token" value="{{ session('captcha_token') }}">
+                        @endif
 
 
 
@@ -503,6 +505,8 @@ $(document).ready(function () {
     });
 
 });
+
+@if(get_general_value('cart_captcha') == 'on')
 $('#refreshCaptcha').on('click', function() {
     $.get("{{ route('captcha.token') }}", function(data) {
         const newToken = data.token;
@@ -510,6 +514,7 @@ $('#refreshCaptcha').on('click', function() {
         $('#captchaImage').attr('src', "{{ route('captcha.image') }}?t=" + newToken + "&r=" + Math.random());
     });
 });
+@endif
 
 </script>
 

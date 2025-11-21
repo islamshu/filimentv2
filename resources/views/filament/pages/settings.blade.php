@@ -450,6 +450,28 @@
                             <span class="slider round"></span>
                         </label>
                     </div>
+                    <div class="d-flex align-items-center justify-content-between p-3 rounded">
+                        <input type="hidden" name="general[cart_captcha]" value="off">
+                        <label for="cart_captcha" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
+                          تفعيل الكابشا للسلة والدفع
+                        </label>
+                        <label class="switch md:col-span-2">
+                            <input type="checkbox" name="general[cart_captcha]" value="on"
+                                @if (get_general_value('cart_captcha') == 'on') checked @endif>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
+                    <div class="d-flex align-items-center justify-content-between p-3 rounded">
+                        <input type="hidden" name="general[code_captcha]" value="off">
+                        <label for="cart_captcha" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
+                          تفعيل الكابشا لصفحة التأكيد 
+                        </label>
+                        <label class="switch md:col-span-2">
+                            <input type="checkbox" name="general[code_captcha]" value="on"
+                                @if (get_general_value('code_captcha') == 'on') checked @endif>
+                            <span class="slider round"></span>
+                        </label>
+                    </div>
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-start">
                         <label for="daman_text" class="text-sm font-medium text-gray-900 dark:text-gray-300 pt-2">
                             نص الضمان

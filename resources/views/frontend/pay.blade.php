@@ -214,6 +214,7 @@
                                     </div>
                                 </div>
                             </div>
+                        @if(get_general_value('cart_captcha') == 'on')
                             <div class="captcha-container">
                                 <img src="{{ route('captcha.image') }}?t={{ session('captcha_token') }}"
                                     id="captchaImage">
@@ -221,6 +222,7 @@
                             </div>
                             <input type="text" name="captcha_answer" placeholder="أدخل الأحرف الظاهرة" required>
                             <input type="hidden" name="captcha_token" value="{{ session('captcha_token') }}">
+                            @endif
 
                             <!-- Submit Button -->
                             <div class="mt-4">
@@ -254,6 +256,8 @@
 @endsection
 @section('scripts')
     <script>
+        @if(get_general_value('cart_captcha') == 'on')
+
         $(document).ready(function() {
             // عناصر الدفع
             function reloadCaptcha() {
@@ -271,6 +275,7 @@
 
             $('#refreshCaptcha').click(reloadCaptcha);
         });
+        @endif
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {

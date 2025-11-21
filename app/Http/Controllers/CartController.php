@@ -116,7 +116,6 @@ class CartController extends Controller
             return back()->with('error', 'محاولات كثيرة، حاول لاحقًا.');
         }
 
-        // التحقق من الحقول الأساسية و CAPTCHA
         $validated = $request->validate([
             'name' => 'required|string',
             'email' => 'nullable|email',
@@ -126,14 +125,13 @@ class CartController extends Controller
             'FirstPayment' => 'required|numeric',
             'InstallmentBy' => 'required|integer',
             'TotalPrice' => 'required|numeric',
-            // honeypot
-            'hp_field' => 'nullable',
-            // CAPTCHA
-            'captcha_answer' => 'required|string',
-            'captcha_token' => 'required|string',
+            'hp_field' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
+            'captcha_answer' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
+            'captcha_token' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
         ]);
-
-        // honeypot للتحقق من الروبوتات
+        if(get_general_value('cart_captcha') == 'on'){
+            
+                // honeypot للتحقق من الروبوتات
         if ($request->filled('hp_field')) {
             RateLimiter::hit($key);
             return back()->withInput()->with('error', 'محاولة مشبوهة.');
@@ -169,6 +167,7 @@ class CartController extends Controller
         session(['captcha_used' => true]);
         session()->forget(['captcha_token', 'captcha_text', 'form_start_time']);
         RateLimiter::clear($key);
+    }
 
         // حفظ بيانات الطلب في الجلسة
         session([

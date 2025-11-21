@@ -125,16 +125,18 @@
                             @csrf
                             <input type="text" name="order" id="orderCode" placeholder="ادخل الكود" required
                                 class="form-control mb-2 w-75">
-
-                            <!-- CAPTCHA -->
-                            <div class="captcha-container d-flex align-items-center my-2">
-                                <img src="{{ route('captcha.image') }}?t={{ session('captcha_token') }}"
-                                    id="captchaImage" class="me-2">
-                                <button type="button" id="refreshCaptcha" class="btn btn-sm btn-secondary">↻</button>
-                            </div>
-                            <input type="text" name="captcha_answer" placeholder="أدخل الأحرف" required
-                                class="form-control mb-2 w-75">
-                            <input type="hidden" name="captcha_token" value="{{ session('captcha_token') }}">
+                            @if (get_general_value('code_captcha') == 'on')
+                                <!-- CAPTCHA -->
+                                <div class="captcha-container d-flex align-items-center my-2">
+                                    <img src="{{ route('captcha.image') }}?t={{ session('captcha_token') }}"
+                                        id="captchaImage" class="me-2">
+                                    <button type="button" id="refreshCaptcha"
+                                        class="btn btn-sm btn-secondary">↻</button>
+                                </div>
+                                <input type="text" name="captcha_answer" placeholder="أدخل الأحرف" required
+                                    class="form-control mb-2 w-75">
+                                <input type="hidden" name="captcha_token" value="{{ session('captcha_token') }}">
+                            @endif
                             <div id="errorMessage" class="error-message"></div>
 
                             <button type="submit" class="btn btn-primary w-100 py-2" id="codeConfirm">تأكيد</button>
@@ -169,21 +171,24 @@
 
     <script>
         $(document).ready(function() {
-            function reloadCaptcha() {
-                fetch('{{ route('captcha.token') }}')
-                    .then(res => res.json())
-                    .then(data => {
-                        $('input[name=captcha_token]').val(data.token);
-                        $('#captchaImage').attr('src', '{{ route('captcha.image') }}?t=' + data.token + '&r=' +
-                            Date.now());
-                    });
-            }
+            @if (get_general_value('code_captcha') == 'on')
 
-            // 🔹 إعادة توليد الكابتشا عند تحميل الصفحة مباشرة
-            reloadCaptcha();
+                function reloadCaptcha() {
+                    fetch('{{ route('captcha.token') }}')
+                        .then(res => res.json())
+                        .then(data => {
+                            $('input[name=captcha_token]').val(data.token);
+                            $('#captchaImage').attr('src', '{{ route('captcha.image') }}?t=' + data.token +
+                                '&r=' +
+                                Date.now());
+                        });
+                }
 
-            $('#refreshCaptcha').click(reloadCaptcha);
+                // 🔹 إعادة توليد الكابتشا عند تحميل الصفحة مباشرة
+                reloadCaptcha();
 
+                $('#refreshCaptcha').click(reloadCaptcha);
+            @endif
             $('#paymentConfirmForm').submit(function(e) {
                 e.preventDefault();
                 $('#errorMessage').text('');
@@ -199,11 +204,16 @@
                             'important');
 
                         if (response.success) {
-                    $("#errorMessage").text(response.message);
-                            reloadCaptcha();
+                            $("#errorMessage").text(response.message);
+                            @if (get_general_value('code_captcha') == 'on')
+                                reloadCaptcha();
+                            @endif
                         } else {
                             $('#errorMessage').text(response.message || 'حدث خطأ ما.');
-                            reloadCaptcha();
+
+                            @if (get_general_value('code_captcha') == 'on')
+                                reloadCaptcha();
+                            @endif
                         }
                     },
                     error: function(xhr) {
@@ -223,7 +233,9 @@
                         } else {
                             $('#errorMessage').text('حدث خطأ ما، حاول مرة أخرى.');
                         }
-                        reloadCaptcha();
+                        @if (get_general_value('code_captcha') == 'on')
+                            reloadCaptcha();
+                        @endif
                     }
                 });
             });
