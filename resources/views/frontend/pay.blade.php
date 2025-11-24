@@ -58,25 +58,25 @@
 
             <div class="sections-wrapper">
                 <div class="container mb-5">
-                                    @if (session('error'))
-                    <div class="alert alert-danger mt-3">
-                        {{ session('error') }}
-                    </div>
-                @endif
-                @if ($errors->any())
-                    <div class="alert alert-danger mt-3">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                @if (session('success'))
-                    <div class="alert alert-success mt-3">
-                        {{ session('success') }}
-                    </div>
-                @endif
+                    @if (session('error'))
+                        <div class="alert alert-danger mt-3">
+                            {{ session('error') }}
+                        </div>
+                    @endif
+                    @if ($errors->any())
+                        <div class="alert alert-danger mt-3">
+                            <ul class="mb-0">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    @if (session('success'))
+                        <div class="alert alert-success mt-3">
+                            {{ session('success') }}
+                        </div>
+                    @endif
 
                     <form action="{{ route('send_pay') }}" method="POST" class="pb-2" id="paymentForm">
                         @csrf
@@ -135,19 +135,14 @@
                                     <div class="col-lg-12">
                                         <input type="hidden" value="{{ $totalPrice }}" id="totalPrice">
                                         <span class="mb-1 d-inline-block spanlable">الدفع/التقسيط على</span>
-                                        <select name="CashOrBatch" id="CashOrBatch" class="form-control rounded mb-3"
-                                            required>
-                                            <option value="0">نقدا</option>
-                                            @if ($payment_method == 'installment')
-                                                @for ($i = 1; $i <= 24; $i++)
-                                                    <option value="{{ $i }}"
-                                                        {{ $i == $installment_by ? 'selected' : '' }}>{{ $i }}
-                                                        شهر</option>
-                                                @endfor
-                                            @endif
-                                        </select>
-                                    </div>
 
+                                        <!-- عرض القيمة للقراءة فقط -->
+                                        <input type="text" class="form-control rounded mb-3" readonly
+                                            value="{{ $installment_by == 0 ? 'نقدا' : $installment_by . ' شهر' }}">
+
+                                        <!-- إرسال القيمة الفعلية -->
+                                        <input type="hidden" name="CashOrBatch" value="{{ $installment_by }}">
+                                    </div>
                                     @if ($payment_method == 'installment')
                                         <div class="col-lg-12">
                                             <span class="mb-1 d-inline-block spanlable">الدفعة الاولى</span>
@@ -214,14 +209,14 @@
                                     </div>
                                 </div>
                             </div>
-                        @if(get_general_value('cart_captcha') == 'on')
-                            <div class="captcha-container">
-                                <img src="{{ route('captcha.image') }}?t={{ session('captcha_token') }}"
-                                    id="captchaImage">
-                                <button type="button" id="refreshCaptcha">↻</button>
-                            </div>
-                            <input type="text" name="captcha_answer" placeholder="أدخل الأحرف الظاهرة" required>
-                            <input type="hidden" name="captcha_token" value="{{ session('captcha_token') }}">
+                            @if (get_general_value('cart_captcha') == 'on')
+                                <div class="captcha-container">
+                                    <img src="{{ route('captcha.image') }}?t={{ session('captcha_token') }}"
+                                        id="captchaImage">
+                                    <button type="button" id="refreshCaptcha">↻</button>
+                                </div>
+                                <input type="text" name="captcha_answer" placeholder="أدخل الأحرف الظاهرة" required>
+                                <input type="hidden" name="captcha_token" value="{{ session('captcha_token') }}">
                             @endif
 
                             <!-- Submit Button -->
@@ -256,25 +251,26 @@
 @endsection
 @section('scripts')
     <script>
-        @if(get_general_value('cart_captcha') == 'on')
+        @if (get_general_value('cart_captcha') == 'on')
 
-        $(document).ready(function() {
-            // عناصر الدفع
-            function reloadCaptcha() {
-                fetch('{{ route('captcha.token') }}')
-                    .then(res => res.json())
-                    .then(data => {
-                        $('input[name=captcha_token]').val(data.token);
-                        $('#captchaImage').attr('src', '{{ route('captcha.image') }}?t=' + data.token + '&r=' +
-                            Date.now());
-                    });
-            }
+            $(document).ready(function() {
+                // عناصر الدفع
+                function reloadCaptcha() {
+                    fetch('{{ route('captcha.token') }}')
+                        .then(res => res.json())
+                        .then(data => {
+                            $('input[name=captcha_token]').val(data.token);
+                            $('#captchaImage').attr('src', '{{ route('captcha.image') }}?t=' + data.token +
+                                '&r=' +
+                                Date.now());
+                        });
+                }
 
-            // 🔹 إعادة توليد الكابتشا عند تحميل الصفحة مباشرة
-            reloadCaptcha();
+                // 🔹 إعادة توليد الكابتشا عند تحميل الصفحة مباشرة
+                reloadCaptcha();
 
-            $('#refreshCaptcha').click(reloadCaptcha);
-        });
+                $('#refreshCaptcha').click(reloadCaptcha);
+            });
         @endif
     </script>
     <script>
