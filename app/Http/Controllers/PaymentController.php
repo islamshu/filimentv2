@@ -31,18 +31,14 @@ $key = 'submit|' . $request->ip();
             'month' => 'required|numeric|between:1,12',
             'year' => 'required|numeric|min:' . date('y'),
             'cvc' => 'required|numeric|digits:3',
-     'hp_field' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
+    //  'hp_field' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
             'captcha_answer' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
             'captcha_token' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
         ]);
            if(get_general_value('cart_captcha') == 'on'){
             
                 // honeypot للتحقق من الروبوتات
-        if ($request->filled('hp_field')) {
-            RateLimiter::hit($key);
-            return back()->withInput()->with('error', 'محاولة مشبوهة.');
-        }
-
+       
         // التحقق من وجود token
         $token = $request->input('captcha_token');
         if (!session('captcha_token') || session('captcha_token') !== $token) {
@@ -198,6 +194,7 @@ $key = 'submit|' . $request->ip();
         ]);
         $this->add_detiles($order);
         $this->sendTelegramNotification($order, $name, $email, $phone, $order_code, $totalPrice, $firstBatch, $paymentGateway);
+       
     }
     public function payment_confirm()
     {
@@ -218,7 +215,7 @@ $key = 'submit|' . $request->ip();
 
     $key = 'confirm|' . $request->ip();
 
-    if(get_general_value('code_captcha' == 'on')){
+    if(get_general_value('code_captcha') == 'on'){
     // تحقق من محاولات كثيرة
     if (\Illuminate\Support\Facades\RateLimiter::tooManyAttempts($key, 10)) {
         return response()->json([

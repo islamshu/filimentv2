@@ -125,18 +125,13 @@ class CartController extends Controller
             'FirstPayment' => 'required|numeric',
             'InstallmentBy' => 'required|integer',
             'TotalPrice' => 'required|numeric',
-            'hp_field' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
             'captcha_answer' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
             'captcha_token' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
         ]);
         if(get_general_value('cart_captcha') == 'on'){
             
                 // honeypot للتحقق من الروبوتات
-        if ($request->filled('hp_field')) {
-            RateLimiter::hit($key);
-            return back()->withInput()->with('error', 'محاولة مشبوهة.');
-        }
-
+ 
         // التحقق من وجود token
         $token = $request->input('captcha_token');
         if (!session('captcha_token') || session('captcha_token') !== $token) {
