@@ -31,7 +31,7 @@
                     <div class="d-none" id="bill-box" style="padding: 15px;">
                         <div class="d-flex justify-content-between mt-4">
                             <span>ملخص السلة</span>
-                            <span>{{ $totalPrice }} <span>{{ get_general_value('currancy') }}</span></span>
+                            <span>{{ $totalPrice }} <span>{{ get_currancy() }}</span></span>
                         </div>
                     </div>
 
@@ -41,7 +41,7 @@
                         <span>اجمالي الطلب</span>
                         <div class="">
                             <span class="d-block text-end">{{ $totalPrice }}
-                                <span>{{ get_general_value('currancy') }}</span>
+                                <span>{{ get_currancy() }}</span>
                                 <a href="" class="text-danger d-block" style="font-size: 12px;">لديك كوبون تخفيض
                                     ؟</a>
                         </div>

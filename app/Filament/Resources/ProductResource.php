@@ -14,12 +14,11 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-
 use function Laravel\Prompts\text;
 
 class ProductResource extends Resource
 {
-    
+
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-banknotes';
@@ -29,7 +28,7 @@ class ProductResource extends Resource
     protected static ?int $navigationSort = 4;
 
 
-  
+
     public static function form(Form $form): Form
     {
         return $form
@@ -40,22 +39,20 @@ class ProductResource extends Resource
                         ->required(),
                 ]),
                 Forms\Components\FileUpload::make('image')
-                ->label('اختر صورة المنتج')
-                ->image()
-                ->disk('public')
-                ->directory('products')
-                ->visibility('public')
-                ->imagePreviewHeight('250')
-                ->preserveFilenames()
-                ->openable()
-                ->downloadable()
-                ->imageEditor()
-                ->default(function ($record) {
-                    return $record?->image_path; // هذا يرجع المسار الخام للصورة
-                })
-                ->required(fn (string $operation): bool => $operation === 'create')
-            
-            ,
+                    ->label('اختر صورة المنتج')
+                    ->image()
+                    ->disk('public')
+                    ->directory('products')
+                    ->visibility('public')
+                    ->imagePreviewHeight('250')
+                    ->preserveFilenames()
+                    ->openable()
+                    ->downloadable()
+                    ->imageEditor()
+                    ->default(function ($record) {
+                        return $record?->image_path; // هذا يرجع المسار الخام للصورة
+                    })
+                    ->required(fn(string $operation): bool => $operation === 'create'),
                 Forms\Components\Grid::make(1)->schema([
                     Forms\Components\Textarea::make('description')
                         ->label('وصف المنتج'),
@@ -71,18 +68,24 @@ class ProductResource extends Resource
                         ->label('الخصم')
                         ->numeric(),
                 ]),
+                Select::make('countries')
+                    ->label('الدول')
+                    ->multiple() // مهم لأنه أكثر من دولة
+                    ->relationship('countries', 'name') // العلاقة
+                    ->preload()
+                    ->searchable(),
                 Forms\Components\Grid::make(1)->schema([
                     Select::make('sub_category_id')
                         ->label('اختر التصنيف')
                         ->options(function () {
                             $options = [];
-                    
+
                             \App\Models\Category::with('subcategories')->get()->each(function ($category) use (&$options) {
                                 if ($category->subcategories->isNotEmpty()) {
                                     $options[$category->name] = $category->subcategories->pluck('name', 'id')->toArray();
                                 }
                             });
-                    
+
                             return $options;
                         })
                         ->searchable()
@@ -100,16 +103,23 @@ class ProductResource extends Resource
                     ->label('صورة المنتج'),
                 Tables\Columns\TextColumn::make('name')
                     ->label('اسم المنتج'),
-                
+
                 Tables\Columns\TextColumn::make('subCategory.name')
                     ->label('التصنيف '),
+                Tables\Columns\TextColumn::make('countries.name')
+                    ->label('الدول')
+                    ->badge()
+                    ->separator(','),
             ])
-            
+
             ->filters([
-                
+
                 Tables\Filters\SelectFilter::make('sub_category_id')
                     ->label('التصنيف')
                     ->options(\App\Models\SubCategory::pluck('name', 'id')->toArray()),
+                Tables\Filters\SelectFilter::make('countries')
+                    ->relationship('countries', 'name')
+                    ->label('الدولة')
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

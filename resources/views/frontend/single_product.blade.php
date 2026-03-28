@@ -2,12 +2,13 @@
 @section('title', $product->name)
 @section('styles')
     <style>
-          @media (min-width: 571px) {
+        @media (min-width: 571px) {
             .maxhi {
                 max-height: 500px;
                 /* overflow-y: auto; */
             }
         }
+
         .breadcrumb-item+.breadcrumb-item::before {
             font-family: 'Font Awesome 6 Free';
             content: '\f053' !important;
@@ -185,17 +186,17 @@
             margin-left: 2px;
         }
 
-         .product-description {
+        .product-description {
             margin-top: 40px;
             border-top: 1px solid #eee;
             padding-top: 30px;
         }
-        
+
         .description-title {
             position: relative;
             margin-bottom: 20px;
         }
-        
+
         .description-title h4 {
             display: inline-block;
             background: #fff;
@@ -204,7 +205,7 @@
             z-index: 2;
             color: #00baf2;
         }
-        
+
         .description-title:after {
             content: "";
             position: absolute;
@@ -215,11 +216,12 @@
             background: #eee;
             z-index: 1;
         }
-        
+
         .description-content {
             line-height: 1.8;
             color: #555;
         }
+
         @media (max-width:570px) {
             .minH {
                 height: 330px;
@@ -261,7 +263,7 @@
             {{ $product->name }}</h5>
         <!-- details -->
         <div class="container-fluid">
-            <div class="row " >
+            <div class="row ">
                 <div class="col-md-6 minH maxhi">
                     <div class="row">
 
@@ -392,12 +394,12 @@
                             <div class="col-6 text-end">
                                 <span
                                     class="text-danger fw-bold fs-4">{{ $product->discount == 0 ? $product->price : $product->price - $product->discount }}
-                                    {{ get_general_value('currancy') }}
+                                    {{ get_currancy() }}
                                 </span>
 
                                 @if ($product->discount != 0)
                                     <span class="text-decoration-line-through text-secondary ms-2">{{ $product->price }}
-                                        {{ get_general_value('currancy') }} </span>
+                                        {{ get_currancy() }} </span>
                                 @endif
 
                             </div>
@@ -410,7 +412,7 @@
                         </div>
                     </form>
                 </div>
-                 <div class="col-12 product-description">
+                <div class="col-12 product-description">
                     <div class="description-title">
                         <h4>وصف المنتج</h4>
                     </div>
@@ -428,59 +430,60 @@
                     style="position: absolute;top:-41px;right:-1px;background-color:#00baf2;color:white;padding:8px 26px;border-top-left-radius:5px;border-top-right-radius:5px;">تقيمات
                     المنتج</span>
                 @foreach (App\Models\Comment::where('page_or_product', 'products')->orderBy('id', 'desc')->get() as $item)
-    @php
-        $fullStars = floor($item->stars);
-        $halfStar = ($item->stars - $fullStars) >= 0.5;
-        $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
-    @endphp
+                    @php
+                        $fullStars = floor($item->stars);
+                        $halfStar = $item->stars - $fullStars >= 0.5;
+                        $emptyStars = 5 - $fullStars - ($halfStar ? 1 : 0);
+                    @endphp
 
-    <div class="product-comment mb-3 pb-4">
-        <div class="row">
-            <div class="col-10 d-flex text-start">
-                <img src="{{ asset('front/assets/image/icons/profile.png') }}" width="50" height="50" alt="">
-                <div class="d-flex flex-column ms-2">
-                    <div class="mb-1">
-                        <span class="fw-bold">{{ $item->name }}</span>
-                        <span class="ms-3">
-                            <i class="fa fa-check"
-                                style="width: 25px; height: 25px; border-radius: 50%; background-color: gold; text-align: center; line-height: 15px; padding-top: 5px;"></i>
-                            قام بالشراء, تم التقييم
-                        </span>
+                    <div class="product-comment mb-3 pb-4">
+                        <div class="row">
+                            <div class="col-10 d-flex text-start">
+                                <img src="{{ asset('front/assets/image/icons/profile.png') }}" width="50"
+                                    height="50" alt="">
+                                <div class="d-flex flex-column ms-2">
+                                    <div class="mb-1">
+                                        <span class="fw-bold">{{ $item->name }}</span>
+                                        <span class="ms-3">
+                                            <i class="fa fa-check"
+                                                style="width: 25px; height: 25px; border-radius: 50%; background-color: gold; text-align: center; line-height: 15px; padding-top: 5px;"></i>
+                                            قام بالشراء, تم التقييم
+                                        </span>
+                                    </div>
+
+                                    {{-- عرض النجوم --}}
+                                    <div class="d-flex mb-2">
+                                        @for ($i = 0; $i < $fullStars; $i++)
+                                            <i class="fa fa-star" style="color: gold;"></i>
+                                        @endfor
+
+                                        @if ($halfStar)
+                                            <i class="fa fa-star-half-o" style="color: gold;"></i>
+                                        @endif
+
+                                        @for ($i = 0; $i < $emptyStars; $i++)
+                                            <i class="fa fa-star-o" style="color: gold;"></i>
+                                        @endfor
+                                    </div>
+
+                                    <p class="text-body" style="font-size: 14px;">{{ $item->comment }}</p>
+                                </div>
+                            </div>
+
+                            <div class="col-2 text-end">
+                                <span class="text-body" style="font-size: 13px;">
+                                    {{ $item->created_at->diffForHumans() }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <hr class="ps-2 pe-2">
                     </div>
-
-                    {{-- عرض النجوم --}}
-                    <div class="d-flex mb-2">
-                        @for ($i = 0; $i < $fullStars; $i++)
-                            <i class="fa fa-star" style="color: gold;"></i>
-                        @endfor
-
-                        @if ($halfStar)
-                            <i class="fa fa-star-half-o" style="color: gold;"></i>
-                        @endif
-
-                        @for ($i = 0; $i < $emptyStars; $i++)
-                            <i class="fa fa-star-o" style="color: gold;"></i>
-                        @endfor
-                    </div>
-
-                    <p class="text-body" style="font-size: 14px;">{{ $item->comment }}</p>
-                </div>
-            </div>
-
-            <div class="col-2 text-end">
-                <span class="text-body" style="font-size: 13px;">
-                    {{ $item->created_at->diffForHumans() }}
-                </span>
-            </div>
-        </div>
-
-        <hr class="ps-2 pe-2">
-    </div>
-@endforeach
+                @endforeach
 
 
 
-               
+
 
 
 
@@ -505,7 +508,7 @@
 
         </h3>
         <div class="slider" dir="ltr">
-            @foreach ($product->similarProducts() as $item)
+            @foreach ($product->similarProducts(session('country_id')) as $item)
                 <a href="{{ route('single_product', $item->id) }}" class="text-decoration-none">
                     <div class="product">
 
@@ -522,12 +525,12 @@
                                 {{ $item->discount == 0 ? $item->price : $item->price - $item->discount }}
                             </span>
                             <span class="text-danger fw-bold fs-6 fs-lg-5">
-                                {{ get_general_value('currancy') }}
+                                {{ get_currancy() }}
                             </span>
 
                             @if ($item->discount != 0)
                                 <span class="text-decoration-line-through text-secondary ms-2">
-                                    {{ $item->price }} {{ get_general_value('currancy') }}
+                                    {{ $item->price }} {{ get_currancy() }}
                                 </span>
                             @endif
                             <div>

@@ -177,7 +177,7 @@
                                             {{ $product->name }}
                                         </a>
                                         <span class="text-black-50">{{ $product->price - $product->discount }}
-                                            {{ get_general_value('currancy') }}</span>
+                                            {{ get_currancy() }}</span>
                                     </div>
 
                                     <div class="col-12 col-md-3 col-lg-5 my-3 px-0">
@@ -205,7 +205,7 @@
                                                 <div class="col-4 col-md-5 text-end fs-6 fw-bold total-price"
                                                     data-item-key="{{ $item['id'] }}">
                                                     المجموع: {{ $item['price'] * $item['quantity'] }}
-                                                    {{ get_general_value('currancy') }}
+                                                    {{ get_currancy() }}
                                                 </div>
                                             </div>
                                         </div>
@@ -240,7 +240,7 @@
                         <div class="row">
                             <div class="col-6">الإجمالي:</div>
                             <div class="col-6 text-end fw-bold total_price">{{ $totalPrice }}
-                                {{ get_general_value('currancy') }}</div>
+                                {{ get_currancy() }}</div>
                         </div>
 
                     </div>
@@ -361,7 +361,7 @@
         </section>
         <div class="floating-box">
             <h5>السعر الإجمالي</h5>
-            <p id="floatingTotal">{{ $totalPrice }} {{ get_general_value('currancy') }}</p>
+            <p id="floatingTotal">{{ $totalPrice }} {{ get_currancy() }}</p>
 
         </div>
 
@@ -478,7 +478,7 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.status === 'success') {
-                    var currany = "{{ get_general_value('currancy') }}";
+                    var currany = "{{ get_currancy() }}";
                     $('.total-price[data-item-key="' + itemKey + '"]').text(
                         'المجموع: ' + (response.cart[itemKey].price * response.cart[itemKey].quantity) + ' ' + currany
                     );

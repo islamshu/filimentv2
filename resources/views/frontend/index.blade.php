@@ -42,6 +42,87 @@
 
 
 </main>
+@if (!session()->has('country_id'))
 
+<div class="modal fade" id="countryModal" tabindex="-1"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-center p-4">
+
+            <h4 class="mb-3">🌍 اختر دولتك</h4>
+            <p class="text-muted">اختر الدولة لعرض المنتجات المناسبة لك</p>
+
+            <select id="countrySelect" class="form-control mb-3">
+                <option value="">-- اختر الدولة --</option>
+                @foreach($countries as $country)
+                    <option value="{{ $country->id }}">
+                        {{ $country->name }}
+                    </option>
+                @endforeach
+            </select>
+
+            <button class="btn btn-primary w-100" onclick="saveCountry()">
+                تأكيد
+            </button>
+
+        </div>
+    </div>
+</div>
+
+@endif
 @include('frontend.reviews')
 @include('frontend.footer')
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    @if (!session()->has('country_id'))
+        let modalEl = document.getElementById('countryModal');
+
+        let modal = new bootstrap.Modal(modalEl, {
+            backdrop: 'static',
+            keyboard: false
+        });
+
+        modal.show();
+
+        // 🔥 يمنع الإغلاق نهائياً
+        modalEl.addEventListener('hide.bs.modal', function (event) {
+            event.preventDefault();
+        });
+    @endif
+
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    @if (!session()->has('country_id'))
+        let modal = new bootstrap.Modal(document.getElementById('countryModal'));
+        modal.show();
+    @endif
+});
+
+function saveCountry() {
+    let countryId = document.getElementById('countrySelect').value;
+
+    if (!countryId) {
+        alert('اختر دولة أولاً');
+        return;
+    }
+
+    fetch("{{ route('set.country') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+        },
+        body: JSON.stringify({
+            country_id: countryId
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        location.reload(); // إعادة تحميل الصفحة
+    });
+}
+</script>

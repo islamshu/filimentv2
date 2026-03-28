@@ -104,7 +104,7 @@
                                 @case(3) بعد 3 اشهر @break
                             @endswitch
                         </span>
-                        <p class="fw-bold">{{ $payment }} <span>{{get_general_value('currancy') }}</span></p>
+                        <p class="fw-bold">{{ $payment }} <span>{{get_currancy() }}</span></p>
                     </div>  
                     @endforeach
                 </div>
@@ -240,12 +240,12 @@
             <div class="col-md-5 col-11 px-4 py-3 my-md-5 my-3 main-confirm" style="box-shadow: rgba(0, 0, 0, 0.1) 0px 1px 3px 0px, rgba(0, 0, 0, 0.06) 0px 1px 2px 0px;background-color:white;border-radius:15px;margin-bottom:20px ! important;margin-top:0 !important">
                 <div class="order-value d-flex justify-content-between mb-2">
                     <span>قيمة الطلب</span>
-                    <p class="fw-normal">{{ $totalPrice }} <span>{{get_general_value('currancy') }}</span></p>
+                    <p class="fw-normal">{{ $totalPrice }} <span>{{get_currancy() }}</span></p>
                 </div>
 
                 <div class="order-value d-flex justify-content-between mb-2">
                     <span>مستحقة اليوم</span>
-                    <p class="fw-bold">{{ $totalPrice / 4 }} <span>{{get_general_value('currancy') }}</span></p>
+                    <p class="fw-bold">{{ $totalPrice / 4 }} <span>{{get_currancy() }}</span></p>
                 </div>
 
                 <hr>

@@ -198,7 +198,7 @@ footer div {
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $detail->product->name }}</td>
                                     <td>{{ $detail->quantity }}</td>
-                                    <td>{{ $detail->price }} {{ get_general_value('currancy') }}</td>
+                                    <td>{{ $detail->price }} {{ get_currancy() }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -210,11 +210,11 @@ footer div {
                     <div>
                         <div style="text-align: right;"><span>مدة الأقساط : </span> {{ $order->CashOrBatch }} </div>
                         <div style="text-align: right; color: #f00"><span>المبلغ الكلي : </span> {{ $totalPrice }}
-                            {{ get_general_value('currancy') }}</div>
+                            {{ get_currancy() }}</div>
                     </div>
                     <div>
                         <div style="text-align: right;"><span>الدفعة الأولى : </span> {{ $order->first_batch }}
-                            {{ get_general_value('currancy') }}</div>
+                            {{ get_currancy() }}</div>
                         <div style="text-align: right;"><span>الختم : </span></div>
                     </div>
                 </div>
@@ -247,14 +247,14 @@ footer div {
                                       @endphp
                                         <tr>
                                             <th>{{ $i + 1 }}</th>
-                                            <th>{{ $order->first_batch .' '.get_general_value('currancy') }}</th>
+                                            <th>{{ $order->first_batch .' '.get_currancy() }}</th>
                                             <th>{{ $date->format('Y/m/d') }}</th> <!-- Format the date to your needs -->
                                         </tr>
                                         @endfor
                                         @elseif($order->payment_getway == 'installment')
                                         <tr>
                                             <th>1</th>
-                                            <th>{{ $order->first_batch .' '.get_general_value('currancy') }}</th>
+                                            <th>{{ $order->first_batch .' '.get_currancy() }}</th>
                                             <th>{{ $order->created_at->format('Y/m/d') }}</th> <!-- Format the date to your needs -->
                                         </tr>
                                         @for ($i = 0; $i < $order->CashOrBatch; $i++)
@@ -264,7 +264,7 @@ footer div {
                                         @endphp
                                         <tr>
                                             <th>{{ $i + 2 }}</th>
-                                            <th>{{ number_format($each, 2) . ' ' . get_general_value('currancy') }}
+                                            <th>{{ number_format($each, 2) . ' ' . get_currancy() }}
                                             </th>
                                             <th>{{ $date->format('Y/m/d') }}</th> <!-- Format the date to your needs -->
                                         </tr>
@@ -272,7 +272,7 @@ footer div {
                                         @elseif($order->payment_getway == 'all')
                                         <tr>
                                             <th>1</th>
-                                            <th>{{ number_format($order->first_batch, 2) . ' ' . get_general_value('currancy') }}
+                                            <th>{{ number_format($order->first_batch, 2) . ' ' . get_currancy() }}
                                             </th>
                                             <th>{{ $order->created_at->format('Y/m/d') }}</th> <!-- Format the date to your needs -->
                                         </tr>

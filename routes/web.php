@@ -16,7 +16,10 @@ Route::get('/cart_new', [CartController::class, 'index_new'])->name('cart.index_
 
 Route::get('/category/{slug}', [HomeController::class, 'category'])->name('category.slug');
 Route::get('/checkenvv', [HomeController::class, 'checkenv']);
-
+Route::post('/set-country', function (\Illuminate\Http\Request $request) {
+    session(['country_id' => $request->country_id]);
+    return response()->json(['status' => 'success']);
+})->name('set.country');
 Route::delete('/cart/remove', [CartController::class, 'remove'])->name('cart.remove');
 Route::post('/cart/update', [CartController::class, 'updateQuantity'])->name('cart.update');
 Route::get('page/{page}', [HomeController::class, 'page'])->name('page');
@@ -26,7 +29,6 @@ Route::get('/captcha/token', [CartController::class, 'generateToken'])->name('ca
 Route::get('/captcha/image', [CartController::class, 'image'])->name('captcha.image');
 Route::get('pay', [CartController::class, 'pay'])->name('pay');
 Route::get('pay_new', [CartController::class, 'pay_new'])->name('pay_new');
-
 Route::get('checkout-tamara', [PaymentController::class, 'tamara'])->name('checkout.tamara');
 Route::get('checkout-tappy', [PaymentController::class, 'tappy'])->name('checkout.tappy');
 Route::post('send_pay', [PaymentController::class, 'processPayment'])->name('send_pay');
