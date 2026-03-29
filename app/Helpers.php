@@ -2,7 +2,8 @@
 
     use App\Models\Country;
     use App\Models\GeneralInfo;
-
+use App\Models\OrderDetail;
+use App\Models\Product;
 
     function get_general_value($key)
     {
@@ -52,5 +53,19 @@
         $country = Country::find(session('country_id'));
         if($country){
             return $country->currency;
+        }
+    }
+    function add_detiles($order)
+    {
+        $cart = session()->get('cart', []);
+        foreach ($cart as $item) {
+            $product = Product::find($item['id']);
+            OrderDetail::create([
+                'order_id' => $order->id,
+                'product_id' => $item['id'],
+                'product_name' => $product->name,
+                'price' => $item['price'],
+                'quantity' => $item['quantity'],
+            ]);
         }
     }

@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\Product; // تأكد أنك مستورد المنتج
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -13,33 +15,33 @@ use Illuminate\Support\Facades\Response;
 class CartController extends Controller
 {
     public function index()
-{
-    $cart = session()->get('cart', []);
+    {
+        $cart = session()->get('cart', []);
 
-    // إنشاء كابتشا نصي بسيط (وليس عملية رياضية)
-    $text = Str::upper(Str::random(5)); // مثل: H8G9K
-    $token = Str::random(20);
+        // إنشاء كابتشا نصي بسيط (وليس عملية رياضية)
+        $text = Str::upper(Str::random(5)); // مثل: H8G9K
+        $token = Str::random(20);
 
-    session([
-        'captcha_text' => $text,
-        'captcha_token' => $token,
-        'captcha_used' => false,
-    ]);
+        session([
+            'captcha_text' => $text,
+            'captcha_token' => $token,
+            'captcha_used' => false,
+        ]);
 
-    // حساب المجموع الكلي
-    $totalPrice = 0;
-    foreach ($cart as $item) {
-        $totalPrice += $item['price'] * $item['quantity'];
+        // حساب المجموع الكلي
+        $totalPrice = 0;
+        foreach ($cart as $item) {
+            $totalPrice += $item['price'] * $item['quantity'];
+        }
+
+        $opartion = ''; // لم تعد ضرورية إذا غيرت نظام الكابتشا
+
+        if (request()->root() == 'https://digitalzone-qa.store' || request()->root() == 'https://digitalzon-qa.store') {
+            return view('frontend.edit_cart', compact('cart', 'totalPrice', 'opartion', 'token'));
+        }
+
+        return view('frontend.cart', compact('cart', 'totalPrice', 'opartion', 'token'));
     }
-
-    $opartion = ''; // لم تعد ضرورية إذا غيرت نظام الكابتشا
-
-    if (request()->root() == 'https://digitalzone-qa.store' || request()->root() == 'https://digitalzon-qa.store') {
-        return view('frontend.edit_cart', compact('cart', 'totalPrice', 'opartion', 'token'));
-    }
-
-    return view('frontend.cart', compact('cart', 'totalPrice', 'opartion', 'token'));
-}
 
     public function index_new()
     {
@@ -110,146 +112,95 @@ class CartController extends Controller
     public function send_data(Request $request)
     {
         $key = 'submit|' . $request->ip();
-
-        // حد لمحاولات الإرسال
-        if (RateLimiter::tooManyAttempts($key, 10)) {
-            return back()->with('error', 'محاولات كثيرة، حاول لاحقًا.');
-        }
-
         $validated = $request->validate([
             'name' => 'required|string',
-            'email' => 'nullable|email',
-            'whatsApp' => 'required',
+            'phone1' => 'required',
+            'phone2' => 'nullable',
+            'whatsapp' => 'required',
             'address' => 'required|string',
+            'notes' => 'nullable|string',
+
             'payment_method' => 'required|string',
             'FirstPayment' => 'required|numeric',
-            'InstallmentBy' => 'required|integer',
             'TotalPrice' => 'required|numeric',
-            'captcha_answer' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
-            'captcha_token' => get_general_value('cart_captcha') == 'on' ? 'required|string' : 'nullable',
+
         ]);
-        if(get_general_value('cart_captcha') == 'on'){
-            
-                // honeypot للتحقق من الروبوتات
- 
-        // التحقق من وجود token
-        $token = $request->input('captcha_token');
-        if (!session('captcha_token') || session('captcha_token') !== $token) {
-            RateLimiter::hit($key);
-            return back()->withInput()->with('error', 'رمز التحقق غير صحيح، أعد تحميل الصفحة.');
-        }
 
-        // التحقق من استخدام CAPTCHA مسبقًا
-        if (session('captcha_used')) {
-            RateLimiter::hit($key);
-            return back()->withInput()->with('error', 'تم استخدام رمز التحقق هذه المرة.');
-        }
-
-        // التحقق من نص CAPTCHA
-        $expectedText = session('captcha_text', '');
-        $answer = strtoupper(preg_replace('/\s+/', '', $request->input('captcha_answer')));
-        if ($answer !== strtoupper($expectedText)) {
-            RateLimiter::hit($key);
-            return back()->withInput()->with('error', 'إجابة التحقق غير صحيحة.');
-        }
-
-        // optional: التحقق من وقت استكمال النموذج
-        $startTime = session('form_start_time') ?? now();
-        $timeTaken = now()->diffInMilliseconds($startTime);
-        
-
-        // كل شيء جيد، تنظيف CAPTCHA ومحاولات الروبوت
-        session(['captcha_used' => true]);
-        session()->forget(['captcha_token', 'captcha_text', 'form_start_time']);
-        RateLimiter::clear($key);
-    }
-
-        // حفظ بيانات الطلب في الجلسة
         session([
             "name" => $request->input('name'),
-            "email" => $request->input('email', 'none'),
-            "phone" => $request->input('whatsApp'),
+            "phone1" => $request->input('phone1'),
+            "phone2" => $request->input('phone2'),
+            "whatsapp" => $request->input('whatsapp'),
             "address" => $request->input('address'),
+            "notes" => $request->input('notes'),
             "payment_method" => $request->input('payment_method'),
             "first_payment" => $request->input('FirstPayment'),
             "installment_by" => $request->input('InstallmentBy'),
-            "totalPrice" => $request->input('TotalPrice')
+            "totalPrice" => $request->input('TotalPrice'),
         ]);
 
-        // حساب الدفعة الشهرية
-        $monthlyPayment = ($request->InstallmentBy > 0)
-            ? ($request->TotalPrice - $request->FirstPayment) / $request->InstallmentBy
-            : 0;
+    
+        $order_code = now()->timestamp . rand(1000, 9999);
 
-        session(["monthly_payment" => $monthlyPayment]);
+  
+        $order = Order::create([
+            'code' => $order_code,
+            'name' => $request->name,
+            'phone' => $request->phone1,
+            'phone2' => $request->phone2,
+            'location'=>$request->address,
+            'payment' => $request->TotalPrice,
+            'first_batch' => $request->FirstPayment,
+            'payment_getway' => 'all',
+            'note'=>$request->notes,
+            'whatsapp'=>$request->whatsapp,
+            'order_currancy'=>get_currancy()
+        ]);
+        add_detiles($order);
 
-        // إعادة التوجيه حسب طريقة الدفع
-        switch ($request->payment_method) {
-            case 'tappy':
-                return redirect()->route('checkout.tappy');
-            case 'tamara':
-                return redirect()->route('checkout.tamara');
-            case 'k-net':
-            case 'knet':
-                return redirect()->route('checkout.knet');
-            default:
-                return redirect()->route('pay');
+        if (!$order) {
+            return redirect('/');
         }
+
+   $message = ":: طلب جديد ::" . PHP_EOL
+    . "رقم الطلب: " . $order->code . PHP_EOL
+    . "الاسم: " . $order->name . PHP_EOL
+    . "رقم الهاتف: " . $order->phone . PHP_EOL
+    . "رقم هاتف 2: " . $order->phone2 . PHP_EOL
+    . "واتساب: " . $order->whatsapp . PHP_EOL
+    . "العنوان: " . $order->location . PHP_EOL
+
+    . "المبلغ الإجمالي: " . $order->payment . PHP_EOL
+    . "الدفعة الأولى: " . $order->first_batch . PHP_EOL
+    . "طريقة الدفع: عند الاستلام" . PHP_EOL
+    . "ملاحظات: " . $order->note . PHP_EOL
+
+    . ":: روابط مهمة ::" . PHP_EOL
+    . "لوحة التحكم: " . url('/admin/orders/' . $order->id) . PHP_EOL
+    . "فاتورة: " . route('invoice.show', $order->id) . PHP_EOL
+    // . "عقد: " . route('invoice.contact', $order->code) . PHP_EOL
+    . "واتساب مباشر: https://wa.me/" . preg_replace('/[^0-9]/', '', $order->phone) . PHP_EOL;
+ $key = env('TOKEN_TELEGRAM');
+        $ids = env('TELEGRAM_CHAT_ID');
+
+        // Prepare request data
+        $url_new = "https://api.telegram.org/bot" . $key . "/sendMessage";
+        $senderr = [
+            'chat_id' => $ids,
+            'text' => $message,
+        ];
+
+        $curll_new = curl_init($url_new);
+        curl_setopt($curll_new, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curll_new, CURLOPT_POST, true);
+        curl_setopt($curll_new, CURLOPT_POSTFIELDS, $senderr);
+        $response = curl_exec($curll_new);
+
+        session()->forget('cart');
+        session()->forget('order_data');
+        return redirect()->route('success_new_payment',$order->code);
     }
 
-    public function send_data_new(Request $request)
-    {
-        // Validate the request data
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'email' => 'nullable|email',
-            'whatsApp' => 'required', // phone number
-            'address' => 'required|string',
-            'payment_method' => 'required|string',
-            'FirstPayment' => 'required|numeric',
-            'InstallmentBy' => 'required|integer',
-            'TotalPrice' => 'required|numeric'
-        ]);
-
-        // Store data in session
-        session(key: [
-            "name" => $request->input('name'),
-            "email" => 'none',
-            "phone" => $request->input('whatsApp'),
-            "address" => $request->input('address'),
-            "payment_method" => $request->input('payment_method'),
-            "first_payment" => $request->input('FirstPayment'),
-            "installment_by" => $request->input('InstallmentBy'),
-            "totalPrice" => $request->input('TotalPrice')
-        ]);
-
-        // Calculate monthly payment
-        $monthlyPayment = ($request->InstallmentBy > 0)
-            ? ($request->TotalPrice - $request->FirstPayment) / $request->InstallmentBy
-            : 0;
-
-        session(["monthly_payment" => $monthlyPayment]);
-
-        // Redirect based on payment method
-        if (
-            $request->payment_method == 'tappy'
-        ) {
-            return redirect()->route('checkout.tappy');
-        }
-
-        if ($request->payment_method == 'tamara') {
-            return redirect()->route('checkout.tamara');
-        }
-        if ($request->payment_method == 'k-net') {
-            return redirect()->route('checkout.knet');
-        }
-        if ($request->payment_method == 'knet') {
-            return redirect()->route('checkout.knet');
-        }
-
-        // Default redirect
-        return redirect()->route('pay_new');
-    }
 
     public function updateQuantity(Request $request)
     {
@@ -327,41 +278,46 @@ class CartController extends Controller
 
     // توليد صورة CAPTCHA ديناميكية
     public function image(Request $request)
-{
-    // نضمن أن النص تم توليده
-    $text = Session::get('captcha_text', 'ERROR');
+    {
+        // نضمن أن النص تم توليده
+        $text = Session::get('captcha_text', 'ERROR');
 
-    $width = 150;
-    $height = 50;
+        $width = 150;
+        $height = 50;
 
-    $image = imagecreatetruecolor($width, $height);
+        $image = imagecreatetruecolor($width, $height);
 
-    // خلفية رمادية فاتحة
-    $bgColor = imagecolorallocate($image, 240, 240, 240);
-    imagefilledrectangle($image, 0, 0, $width, $height, $bgColor);
+        // خلفية رمادية فاتحة
+        $bgColor = imagecolorallocate($image, 240, 240, 240);
+        imagefilledrectangle($image, 0, 0, $width, $height, $bgColor);
 
-    // خطوط تشويش
-    for ($i = 0; $i < 5; $i++) {
-        $lineColor = imagecolorallocate($image, rand(150, 200), rand(150, 200), rand(150, 200));
-        imageline($image, rand(0, $width), rand(0, $height), rand(0, $width), rand(0, $height), $lineColor);
+        // خطوط تشويش
+        for ($i = 0; $i < 5; $i++) {
+            $lineColor = imagecolorallocate($image, rand(150, 200), rand(150, 200), rand(150, 200));
+            imageline($image, rand(0, $width), rand(0, $height), rand(0, $width), rand(0, $height), $lineColor);
+        }
+
+        // كتابة النص
+        $textColor = imagecolorallocate($image, 0, 0, 0);
+        $fontSize = 5;
+        $x = 20;
+        $y = 18;
+
+        for ($i = 0; $i < strlen($text); $i++) {
+            imagestring($image, $fontSize, $x + ($i * 20), $y + rand(-5, 5), $text[$i], $textColor);
+        }
+
+        ob_start();
+        imagepng($image);
+        $contents = ob_get_clean();
+        imagedestroy($image);
+
+        return response($contents)->header('Content-Type', 'image/png');
     }
+    public function success_new_payment($code)
+    {
+         $order = Order::where("code",$code)->first();
 
-    // كتابة النص
-    $textColor = imagecolorallocate($image, 0, 0, 0);
-    $fontSize = 5;
-    $x = 20;
-    $y = 18;
-
-    for ($i = 0; $i < strlen($text); $i++) {
-        imagestring($image, $fontSize, $x + ($i * 20), $y + rand(-5, 5), $text[$i], $textColor);
+        return view('frontend.success_new_payment')->with('order', $order);
     }
-
-    ob_start();
-    imagepng($image);
-    $contents = ob_get_clean();
-    imagedestroy($image);
-
-    return response($contents)->header('Content-Type', 'image/png');
-}
-
 }

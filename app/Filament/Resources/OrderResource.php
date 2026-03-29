@@ -44,31 +44,32 @@ class OrderResource extends Resource
 
                 // عمود لعرض رقم الهاتف
                 TextColumn::make('phone')->label('رقم الهاتف'),
+                TextColumn::make('phone2')->label('رقم الهاتف الثاني'),
 
                 // عمود لعرض البريد الإلكتروني
                 // TextColumn::make('email')->label('البريد الإلكتروني'),
 
                 // عمود لعرض المبلغ المدفوع
                 TextColumn::make('payment')->label('المبلغ المدفوع')->suffix(' ' . get_general_value('currancy')),
-                TextColumn::make('payment_getway')
-                    ->label('طريقة الدفع')
-                    ->formatStateUsing(function ($state) {
-                        return match ($state) {
-                            'all' => 'كامل',
-                            'installment' => 'تقسيط',
-                            default => $state, // افتراضيًا إذا لم تكن القيمة معروفة
-                        };
-                    }),
-                TextColumn::make('CashOrBatch')->label('فترة التقسيط')->formatStateUsing(function ($state) {
-                    return match ($state) {
+                // TextColumn::make('payment_getway')
+                //     ->label('طريقة الدفع')
+                //     ->formatStateUsing(function ($state) {
+                //         return match ($state) {
+                //             'all' => 'كامل',
+                //             'installment' => 'تقسيط',
+                //             default => $state, // افتراضيًا إذا لم تكن القيمة معروفة
+                //         };
+                //     }),
+                // TextColumn::make('CashOrBatch')->label('فترة التقسيط')->formatStateUsing(function ($state) {
+                //     return match ($state) {
 
-                        '0' => '_',
+                //         '0' => '_',
 
-                        default => $state, // افتراضيًا إذا لم تكن القيمة معروفة
-                    };
-                }),
-                TextColumn::make('first_batch')
-                    ->label('الدفعة الأولى')
+                //         default => $state, // افتراضيًا إذا لم تكن القيمة معروفة
+                //     };
+                // }),
+                // TextColumn::make('first_batch')
+                //     ->label('الدفعة الأولى')
 
 
 
@@ -81,11 +82,11 @@ class OrderResource extends Resource
                     ->icon('heroicon-o-document-text')
                     ->url(fn($record) => route('invoice.show', $record)) // تأكد أن لديك هذا الراوت
                     ->openUrlInNewTab(),
-                Action::make('عقد التقسيط ')
-                    ->label('عقد التقسيط ')
-                    ->icon('heroicon-o-document-text')
-                    ->url(fn($record) => route('invoice.contact', $record->code)) // تأكد أن لديك هذا الراوت
-                    ->openUrlInNewTab(),
+                // Action::make('عقد التقسيط ')
+                //     ->label('عقد التقسيط ')
+                //     ->icon('heroicon-o-document-text')
+                //     ->url(fn($record) => route('invoice.contact', $record->code)) // تأكد أن لديك هذا الراوت
+                //     ->openUrlInNewTab(),
 
                 \Filament\Tables\Actions\DeleteAction::make(),
             ])

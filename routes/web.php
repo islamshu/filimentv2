@@ -13,6 +13,8 @@ Route::get('/csrab', [HomeController::class,'csrab']);
 Route::post('/cart/store', [CartController::class, 'store'])->name('cart.store');
 Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::get('/cart_new', [CartController::class, 'index_new'])->name('cart.index_new');
+Route::get('/success/{code}', [CartController::class, 'success_new_payment'])->name('success_new_payment');
+
 
 Route::get('/category/{slug}', [HomeController::class, 'category'])->name('category.slug');
 Route::get('/checkenvv', [HomeController::class, 'checkenv']);

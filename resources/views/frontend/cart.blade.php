@@ -169,8 +169,10 @@
                                                         <i class="fa fa-plus text-black-50" aria-hidden="true"></i>
                                                     </button>
                                                 </form>
+                                                
                                             </div>
-                                            <div class="col-4 col-md-5 text-end fs-6 fw-bold total-price total_price" data-item-key="{{ $item['id'] }}">
+                                            <div class="col-4 col-md-5 text-end fs-6 fw-bold total-price total_price"
+                                                data-item-key="{{ $item['id'] }}">
                                                 المجموع: {{ $item['price'] * $item['quantity'] }} {{ get_currancy() }}
                                             </div>
                                         </div>
@@ -220,129 +222,100 @@
                         {{ session('success') }}
                     </div>
                 @endif
-
                 <form action="{{ route('send_data') }}" method="POST"
                     class="row align-items-center justify-content-center justify-content-lg-start">
                     @csrf
+
                     <div class="product-options mt-4 rounded bg-white border py-4 px-4">
                         <h5 class="fw-bold text-black mb-3">تفاصيل الطلب</h5>
 
                         <!-- الاسم -->
                         <div class="form-group mb-3">
-                            <label class="product-option-name required">الاسم كاملا</label>
-                            <input type="text" id="fullName" name="name" class="form-control" placeholder="الاسم كاملا" required>
+                            <label>الاسم</label>
+                            <input type="text" name="name" class="form-control" required>
                         </div>
 
-
-                        <!-- الايميل -->
-                        {{-- <div class="form-group mb-3">
-                            <label class="product-option-name required">الايميل</label>
-                            <input type="email" id="email" name="email" class="form-control" placeholder="الايميل" required>
-                        </div> --}}
-
-                        <!-- رقم الواتس -->
+                        <!-- رقم هاتف 1 -->
                         <div class="form-group mb-3">
-                            <label class="product-option-name required">رقم الواتس</label>
-                            <input type="text" id="WhatsApp" name="whatsApp" class="form-control" placeholder="رقم الواتس" required>
+                            <label>رقم هاتف 1</label>
+                            <input type="text" name="phone1" class="form-control" required>
+                        </div>
+
+                        <!-- رقم هاتف 2 -->
+                        <div class="form-group mb-3">
+                            <label>رقم هاتف 2</label>
+                            <input type="text" name="phone2" class="form-control" required>
+                        </div>
+
+                        <!-- واتساب -->
+                        <div class="form-group mb-3">
+                            <label>رقم واتساب</label>
+                            <input type="text" name="whatsapp" class="form-control" required>
                         </div>
 
                         <!-- العنوان -->
                         <div class="form-group mb-3">
-                            <label class="product-option-name required">العنوان كاملا</label>
-                            <input type="text" id="address" name="address" class="form-control" placeholder="العنوان كاملا" required>
+                            <label>العنوان بالتفصيل</label>
+                            <input type="text" name="address" class="form-control" required>
+                        </div>
+                       <input name="FirstPayment" id="FirstPayment" value="{{ $totalPrice }}" type="hidden">
+
+
+                        <!-- ملاحظات -->
+                        <div class="form-group mb-3">
+                            <label>ملاحظات</label>
+                            <textarea name="notes" class="form-control"></textarea>
                         </div>
 
                         <!-- طريقة الدفع -->
                         <div class="form-group mb-3">
-                            <label class="product-option-name required">طريقة الدفع</label>
-                            <select class="form-control" id="installment" name="payment_method" required>
-                                <option value="" disabled {{ old('payment_method') ? '' : 'selected' }}>اختر
-                                </option>
-                                <option value="all" {{ old('payment_method') == 'all' ? 'selected' : '' }}>كامل
-                                </option>
-                                <option value="installment"
-                                    {{ old('payment_method') == 'installment' ? 'selected' : '' }}>تقسيط</option>
-                                @if (get_general_value('tappy_tamara_payment') == 'on')
-                                    <option value="tappy" {{ old('payment_method') == 'tappy' ? 'selected' : '' }}>تابي
-                                    </option>
-                                    <option value="tamara" {{ old('payment_method') == 'tamara' ? 'selected' : '' }}>تمارا
-                                    </option>
-                                @endif
-                                @if (get_general_value('kent_payment') == 'on')
-                                    <option value="k-net" {{ old('payment_method') == 'k-net' ? 'selected' : '' }}>كي نت
-                                    </option>
-                                @endif
+                            <label>طريقة الدفع</label>
+                            <select class="form-control" name="payment_method">
+                                {{-- <option value="">اختر</option> --}}
+                                <option value="all" selected>كامل</option>
+                                {{-- <option value="installment">تقسيط</option> --}}
+                                {{-- <option value="tappy">تابي</option> --}}
+                                {{-- <option value="tamara">تمارا</option> --}}
+                                {{-- <option value="k-net">كي نت</option> --}}
                             </select>
                         </div>
 
-                        @php
-                            $paymentSettings = App\Models\PaymentSettings::first();
-                            $isCustom = $paymentSettings?->custom_payment_enabled ?? false;
-                            $isMultiple = $paymentSettings?->multiple_payments_enabled ?? false;
-                            $multiple_payments = $paymentSettings?->multiple_payments ?? [];
-                            $default_batch = $paymentSettings?->batch ?? 0;
-                        @endphp
-
                         <!-- المجموع الكلي -->
-                        <div class="form-group mb-3 installment">
-                            <label class="product-option-name required">المجموع الكلي</label>
-                            <input value="{{ $totalPrice }}" id="TotalPrice" name="TotalPrice" class="form-control" type="number" readonly>
+                        <div class="form-group mb-3">
+                            <label>المجموع الكلي</label>
+                            <input value="{{ $totalPrice }}" id="TotalPrice" name="TotalPrice" class="form-control"
+                                readonly>
                         </div>
+
                         <!-- الدفعة الأولى -->
-                        <div class="form-group mb-3 installment">
-                            <label class="product-option-name required">الدفعة الأولى</label>
-                            @if ($isCustom)
-                                <input value="{{ $default_batch }}" min="0" readonly id="FirstPayment" name="FirstPayment" class="form-control" type="number">
-                            @elseif ($isMultiple && count($multiple_payments) > 0)
-                                <select id="FirstPaymentSelect" class="form-control">
-                                    <option value="">اختر قيمة الدفعة</option>
-                                    @foreach ($multiple_payments as $payment)
-                                        <option value="{{ $payment }}"
-                                            {{ old('FirstPayment') == $payment ? 'selected' : '' }}>
-                                            {{ $payment }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <input type="hidden" id="FirstPayment" name="FirstPayment" value="{{ $default_batch }}">
-                            @else
-                                <p class="text-danger">لم يتم تفعيل نظام دفعات صالح.</p>
-                            @endif
-                        </div>
-                        <!-- عدد أشهر التقسيط -->
-                        <div class="form-group mb-3 installment">
-                            <label class="product-option-name required">الرجاء تحديد عدد شهور التقسيط</label>
-                            <select name="InstallmentBy" id="InstallmentBy" class="form-control">
-                                @for($i = 1; $i <= 24; $i++)
+                        {{-- <div class="form-group mb-3">
+            <label>الدفعة الأولى</label>
+            <input name="FirstPayment" class="form-control" type="number" required>
+        </div> --}}
+
+                        <!-- عدد الأشهر -->
+                        {{-- <div class="form-group mb-3">
+                            <label>عدد الأشهر</label>
+                            <select name="InstallmentBy" class="form-control" required>
+                                @for ($i = 1; $i <= 24; $i++)
                                     <option value="{{ $i }}">{{ $i }} شهر</option>
                                 @endfor
                             </select>
-                        </div>
-
-                        <!-- الدفعة الشهرية -->
-                        <div class="form-group mb-3 installment" id="MonthlyPaymentLi" style="display:none;">
-                            <label class="product-option-name required">الدفعة الشهرية</label>
-                            <input value="0" readonly id="MonthlyPayment" name="MonthlyPayment" class="form-control">
-                        </div>
-                        @if(get_general_value('cart_captcha') == 'on')
-
-                        <div class="captcha-container">
-                            <img src="{{ route('captcha.image') }}?t={{ session('captcha_token') }}" id="captchaImage">
-                            <button type="button" id="refreshCaptcha">↻</button>
-                        </div>
-                        <input type="text" name="captcha_answer" placeholder="أدخل الأحرف الظاهرة" required>
-                        <input type="hidden" name="captcha_token" value="{{ session('captcha_token') }}">
-                        @endif
-
-
+                        </div> --}}
 
                         <!-- زر الإرسال -->
-                        <div class="form-group text-end mt-3">
+                        <div class="form-group mt-3">
                             <button type="submit" class="btn btn-primary w-100">إتمام الطلب</button>
                         </div>
-
+                        <div class="form-group mt-3">
+    <p style="color: red; font-weight: bold;  font-size: 16px;">
+        ⚠️ الدفع عند الاستلام فقط
+    </p>
+</div>
 
                     </div>
                 </form>
+                
             </div>
         </section>
 
@@ -359,17 +332,17 @@
 @endsection
 
 @section('scripts')
-<script>
-$(document).ready(function() {
-    // عناصر الدفع
-    const $installmentSelect = $('#installment');
-    const $installmentFields = $('.installment');
-    const $installmentBySelect = $('#InstallmentBy');
-    const $firstPaymentInput = $('#FirstPayment');
-    const $firstPaymentSelect = $('#FirstPaymentSelect');
-    const $monthlyPaymentInput = $('#MonthlyPayment');
-    const $monthlyPaymentLi = $('#MonthlyPaymentLi');
-    const $totalPriceInput = $('#TotalPrice');
+    <script>
+        $(document).ready(function() {
+            // عناصر الدفع
+            const $installmentSelect = $('#installment');
+            const $installmentFields = $('.installment');
+            const $installmentBySelect = $('#InstallmentBy');
+            const $firstPaymentInput = $('#FirstPayment');
+            const $firstPaymentSelect = $('#FirstPaymentSelect');
+            const $monthlyPaymentInput = $('#MonthlyPayment');
+            const $monthlyPaymentLi = $('#MonthlyPaymentLi');
+            const $totalPriceInput = $('#TotalPrice');
 
             // إظهار/إخفاء خيارات التقسيط مع alert
             function toggleInstallmentFields() {
@@ -429,93 +402,96 @@ $(document).ready(function() {
                 updateMonthlyPayment();
             });
 
-    // تنفيذ عند تحميل الصفحة
-    toggleInstallmentFields();
-});
-</script>
-<script>
-$(document).ready(function () {
-
-    // دالة لتحديث الكمية عبر AJAX
-    function updateCartQuantity(form, quantityInput) {
-        let itemKey = form.find('input[name="itemKey"]').val();
-        let quantity = quantityInput.val();
-
-        // منع القيم الأقل من 1
-        if (quantity < 1) {
-            quantity = 1;
-            quantityInput.val(1);
-        }
-
-        $.ajax({
-            url: "{{ route('cart.update') }}",
-            method: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                itemKey: itemKey,
-                quantity: quantity
-            },
-            success: function (response) {
-                if (response.status === 'success') {
-                    // الحصول على بيانات المنتج المحدّث
-                    let updatedItem = response.cart[itemKey];
-                    let total = updatedItem.price * updatedItem.quantity;
-
-                    // تحديث المجموع الفردي للمنتج
-                    form.closest('.row')
-                        .find('.total-price')
-                        .text('المجموع: ' + total + ' {{ get_general_value("currancy") }}');
-
-                    // تحديث المجموع الكلي في input وفي النصوص الأخرى
-                    const newTotal = response.totalPrice;
-                    $('#TotalPrice').val(newTotal); // تحديث حقل input
-                    $('.total_price').text(newTotal + ' {{ get_general_value("currancy") }}'); // المجموع في الصندوق الأبيض
-                    $('#floatingTotal').text(newTotal + ' {{ get_general_value("currancy") }}'); // الصندوق العائم
-                }
-            },
-            error: function (xhr) {
-                console.error(xhr.responseText);
-            }
+            // تنفيذ عند تحميل الصفحة
+            toggleInstallmentFields();
         });
-    }
+    </script>
+    <script>
+        $(document).ready(function() {
 
-    // عند الضغط على زر الزيادة
-    $(document).on('click', '.increase-btn', function () {
-        let form = $(this).closest('form');
-        let quantityInput = form.find('.quantity-input');
-        quantityInput.val(parseInt(quantityInput.val()) + 1);
-        updateCartQuantity(form, quantityInput);
-    });
+            // دالة لتحديث الكمية عبر AJAX
+            function updateCartQuantity(form, quantityInput) {
+                let itemKey = form.find('input[name="itemKey"]').val();
+                let quantity = quantityInput.val();
 
-    // عند الضغط على زر النقصان
-    $(document).on('click', '.decrease-btn', function () {
-        let form = $(this).closest('form');
-        let quantityInput = form.find('.quantity-input');
-        let current = parseInt(quantityInput.val());
-        if (current > 1) {
-            quantityInput.val(current - 1);
-            updateCartQuantity(form, quantityInput);
-        }
-    });
+                // منع القيم الأقل من 1
+                if (quantity < 1) {
+                    quantity = 1;
+                    quantityInput.val(1);
+                }
 
-    // عند تعديل الرقم يدويًا داخل input
-    $(document).on('change', '.quantity-input', function () {
-        let form = $(this).closest('form');
-        updateCartQuantity(form, $(this));
-    });
+                $.ajax({
+                    url: "{{ route('cart.update') }}",
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        itemKey: itemKey,
+                        quantity: quantity
+                    },
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            // الحصول على بيانات المنتج المحدّث
+                            let updatedItem = response.cart[itemKey];
+                            let total = updatedItem.price * updatedItem.quantity;
 
-});
+                            // تحديث المجموع الفردي للمنتج
+                            form.closest('.row')
+                                .find('.total-price')
+                                .text('المجموع: ' + total + ' {{ get_general_value('currancy') }}');
 
-@if(get_general_value('cart_captcha') == 'on')
-$('#refreshCaptcha').on('click', function() {
-    $.get("{{ route('captcha.token') }}", function(data) {
-        const newToken = data.token;
-        $('input[name="captcha_token"]').val(newToken);
-        $('#captchaImage').attr('src', "{{ route('captcha.image') }}?t=" + newToken + "&r=" + Math.random());
-    });
-});
-@endif
+                            // تحديث المجموع الكلي في input وفي النصوص الأخرى
+                            const newTotal = response.totalPrice;
+                        $('#TotalPrice').val(newTotal);
+                        $('#FirstPayment').val(newTotal);
+                            $('.total_price').text(newTotal +
+                                ' {{ get_general_value('currancy') }}'); // المجموع في الصندوق الأبيض
+                            $('#floatingTotal').text(newTotal +
+                                ' {{ get_general_value('currancy') }}'); // الصندوق العائم
+                        }
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
 
-</script>
+            // عند الضغط على زر الزيادة
+            $(document).on('click', '.increase-btn', function() {
+                let form = $(this).closest('form');
+                let quantityInput = form.find('.quantity-input');
+                quantityInput.val(parseInt(quantityInput.val()) + 1);
+                updateCartQuantity(form, quantityInput);
+            });
+
+            // عند الضغط على زر النقصان
+            $(document).on('click', '.decrease-btn', function() {
+                let form = $(this).closest('form');
+                let quantityInput = form.find('.quantity-input');
+                let current = parseInt(quantityInput.val());
+                if (current > 1) {
+                    quantityInput.val(current - 1);
+                    updateCartQuantity(form, quantityInput);
+                }
+            });
+
+            // عند تعديل الرقم يدويًا داخل input
+            $(document).on('change', '.quantity-input', function() {
+                let form = $(this).closest('form');
+                updateCartQuantity(form, $(this));
+            });
+
+        });
+
+        @if (get_general_value('cart_captcha') == 'on')
+            $('#refreshCaptcha').on('click', function() {
+                $.get("{{ route('captcha.token') }}", function(data) {
+                    const newToken = data.token;
+                    $('input[name="captcha_token"]').val(newToken);
+                    $('#captchaImage').attr('src', "{{ route('captcha.image') }}?t=" + newToken + "&r=" +
+                        Math.random());
+                });
+            });
+        @endif
+    </script>
 
 @endsection

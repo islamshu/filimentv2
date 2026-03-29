@@ -19,14 +19,11 @@ class Order extends Model
         'country',
         'payment',
         'first_batch',
-        'CardName',
-        'cardNumber',
-        'month',
-        'year',
-        'cvc',
-        'payment_getway',
-        'CashOrBatch',
-        'code'
+        'phone2',
+        'note',
+        'whatsapp',
+        'code',
+        'order_currancy'
     ];
     public function orderDetails()
     {
