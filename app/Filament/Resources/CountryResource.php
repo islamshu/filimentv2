@@ -19,6 +19,7 @@ class CountryResource extends Resource
     protected static ?string $modelLabel = 'الدولة';
     protected static ?string $pluralModelLabel = 'الدول';
     protected static ?string $navigationLabel = 'الدول';
+    protected static bool $shouldRegisterNavigation = false;
 
     public static function form(Form $form): Form
     {

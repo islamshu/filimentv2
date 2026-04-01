@@ -46,7 +46,15 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="px-4 py-2">5</td>
+                    <td class="px-4 py-2 border-b">5</td>
+                    <td class="px-4 py-2 border-b">الدول  </td>
+
+                    <td class="px-4 py-2   border-b text-blue-600">
+                        <a href="{{route('filament.admin.resources.countries.index') }}" target="_blank">مشاهدة الصفحة</a>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="px-4 py-2 border-b">6</td>
                     <td class="px-4 py-2 border-b">الصور في الفوتر</td>
 
                     <td class="px-4 py-2   border-b text-blue-600">
@@ -54,7 +62,7 @@
                     </td>
                 </tr>
                   <tr>
-                    <td class="px-4 py-2">5</td>
+                    <td class="px-4 py-2 border-b">7</td>
                     <td class="px-4 py-2 border-b"> رفع ملفات </td>
 
                     <td class="px-4 py-2   border-b text-blue-600">
@@ -62,7 +70,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="px-4 py-2">5</td>
+                    <td class="px-4 py-2 border-b">8</td>
                     <td class="px-4 py-2 border-b"> (ممكن يتسغرق بعض الوقت)  تجديد الصور الكاتجوري  </td>
 
                     <td class="px-4 py-2   border-b text-blue-600">
