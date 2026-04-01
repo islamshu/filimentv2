@@ -390,6 +390,116 @@
         },
     });
 </script>
+<script>
+$(document).ready(function() {
+    let isLoading = false;
+    
+    function loadMoreProducts(button) {
+        if (isLoading) return;
+        
+        const categoryId = button.data('category-id');
+        let offset = button.data('offset');
+        const total = button.data('total');
+        
+        if (offset >= total) {
+            button.hide();
+            return;
+        }
+        
+        isLoading = true;
+        
+        button.prop('disabled', true).text('جاري التحميل...');
+        
+        $.ajax({
+            url: '{{ route("load.more.products") }}',
+            method: 'POST',
+            data: {
+                _token: '{{ csrf_token() }}',
+                category_id: categoryId,
+                offset: offset,
+                limit: 9,
+                country_id: '{{ session('country_id') }}'
+            },
+            success: function(response) {
+                if (response.html) {
+                    // إضافة المنتجات الجديدة داخل نفس الـ container
+                    $('#products-container-' + categoryId).append(response.html);
+                    
+                    const newOffset = offset + 9;
+                    button.data('offset', newOffset);
+                    const remaining = total - newOffset;
+                    
+                    if (remaining > 0) {
+                        button.prop('disabled', false).text(`تحميل المزيد (${remaining} منتجات متبقية)`);
+                    } else {
+                        button.hide();
+                    }
+                    
+                    // إعادة تهيئة أي مكتبات إضافية إذا كانت موجودة
+                    // مثلاً إذا كنت تستخدم lazy load للصور
+                    if (typeof lazyLoadImages === 'function') {
+                        lazyLoadImages();
+                    }
+                }
+                isLoading = false;
+            },
+            error: function(xhr) {
+                console.log(xhr.responseText);
+                button.prop('disabled', false).text('حدث خطأ، حاول مرة أخرى');
+                setTimeout(() => {
+                    button.text('تحميل المزيد');
+                    isLoading = false;
+                }, 2000);
+            }
+        });
+    }
+    
+    // استخدام Intersection Observer للتحميل التلقائي
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting && !isLoading) {
+                    const button = $(entry.target);
+                    if (button.is(':visible') && !button.prop('disabled')) {
+                        loadMoreProducts(button);
+                    }
+                }
+            });
+        }, { 
+            threshold: 0.1,
+            rootMargin: '100px'
+        });
+        
+        $('.load-more-btn').each(function() {
+            observer.observe(this);
+        });
+    } else {
+        $(window).on('scroll', function() {
+            $('.load-more-btn:visible').each(function() {
+                const button = $(this);
+                const rect = button[0].getBoundingClientRect();
+                const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                
+                if (rect.top <= windowHeight - 100 && !button.prop('disabled') && !isLoading) {
+                    loadMoreProducts(button);
+                }
+            });
+        });
+        
+        setTimeout(() => {
+            $('.load-more-btn:visible').each(function() {
+                const button = $(this);
+                const rect = button[0].getBoundingClientRect();
+                const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+                
+                if (rect.top <= windowHeight - 100 && !button.prop('disabled') && !isLoading) {
+                    loadMoreProducts(button);
+                }
+            });
+        }, 1000);
+    }
+});
+</script>
 </body>
 
 

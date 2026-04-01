@@ -78,8 +78,146 @@
     --bs-btn-disabled-bg: #212529;
     --bs-btn-disabled-border-color: #212529;
 }
+body.modal-open::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    z-index: 1040;
+}
+
+#countryModal {
+    z-index: 1055;
+}
+
 
 </style>
+<style>
+/* تنسيق شبكة المنتجات */
+.products-grid .row {
+    margin-left: -10px;
+    margin-right: -10px;
+}
+
+.products-grid .product-item {
+    padding-left: 10px;
+    padding-right: 10px;
+    transition: transform 0.3s ease;
+}
+
+.products-grid .product-item:hover {
+    transform: translateY(-5px);
+}
+
+/* تنسيق الزر */
+.load-more-btn {
+    background-color: #28a745;
+    border-color: #28a745;
+    padding: 10px 30px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.load-more-btn:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.load-more-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* تنسيقات إضافية للعرض المتجاوب */
+@media (max-width: 768px) {
+    .products-grid .product-item {
+        margin-bottom: 20px;
+    }
+    
+    .load-more-btn {
+        padding: 8px 20px;
+        font-size: 14px;
+    }
+}
+/* تحسين عرض أزرار التحميل */
+.load-more-btn {
+    transition: all 0.3s ease;
+    min-width: 200px;
+}
+
+/* تأثير عند التمرير على الزر */
+.load-more-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* تأثير عند التعطيل */
+.load-more-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* أنيميشن بسيط للمنتجات الجديدة */
+.product-item {
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* ضمان تناسق المنتجات */
+.product-item {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.product-item .product {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+}
+
+.product-item .product .container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-item .product .mt-2:last-child {
+    margin-top: auto;
+}
+
+/* أنيميشن للمنتجات الجديدة */
+.product-item.new-product {
+    animation: fadeInUp 0.5s ease;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+</style>
+
 <body>
 
 

@@ -6,7 +6,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
-
+use Illuminate\Http\Request;
+use App\Models\SubCategory;
 Route::get('/', [HomeController::class,'index'])->name('home');
 Route::get('product/{id}',[HomeController::class,'single_product'])->name('single_product');
 Route::get('/csrab', [HomeController::class,'csrab']);
@@ -44,6 +45,10 @@ Route::get('checkout-knet', [PaymentController::class, 'knet'])->name('checkout.
 Route::post('process-knet', [PaymentController::class, 'payment_knet_post'])->name('process.knet');
 Route::get('confirm-knet', [PaymentController::class, 'knet_confirm'])->name('knet.confirm');
 Route::post('confirm_knet', [PaymentController::class, 'knet_confirm_post'])->name('otp.submit');
+
+
+Route::post('/load-more-products', [HomeController::class,'load_more'])->name('load.more.products');
+  
 Route::get('toggle-maintenance', function() {
     $file = storage_path('framework/maintenance_mode');
 
