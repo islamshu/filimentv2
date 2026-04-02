@@ -47,7 +47,7 @@ Route::get('confirm-knet', [PaymentController::class, 'knet_confirm'])->name('kn
 Route::post('confirm_knet', [PaymentController::class, 'knet_confirm_post'])->name('otp.submit');
 
 
-Route::post('/load-more-products', [HomeController::class,'load_more'])->name('load.more.products');
+Route::get('/load-more-products', [HomeController::class,'load_more'])->name('load.more.products');
   
 Route::get('toggle-maintenance', function() {
     $file = storage_path('framework/maintenance_mode');

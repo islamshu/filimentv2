@@ -171,12 +171,12 @@ class CartController extends Controller
     . "العنوان: " . $order->location . PHP_EOL
 
     . "المبلغ الإجمالي: " . $order->payment . PHP_EOL
-    . "الدفعة الأولى: " . $order->first_batch . PHP_EOL
+    // . "الدفعة الأولى: " . $order->first_batch . PHP_EOL
     . "طريقة الدفع: عند الاستلام" . PHP_EOL
     . "ملاحظات: " . $order->note . PHP_EOL
 
     . ":: روابط مهمة ::" . PHP_EOL
-    . "لوحة التحكم: " . url('/admin/orders/' . $order->id) . PHP_EOL
+    // . "لوحة التحكم: " . url('/admin/orders/' . $order->id) . PHP_EOL
     . "فاتورة: " . route('invoice.show', $order->id) . PHP_EOL
     // . "عقد: " . route('invoice.contact', $order->code) . PHP_EOL
     . "واتساب مباشر: https://wa.me/" . preg_replace('/[^0-9]/', '', $order->phone) . PHP_EOL;

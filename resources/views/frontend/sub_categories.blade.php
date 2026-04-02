@@ -26,9 +26,9 @@
             <div class="text-center mt-3">
                 <button class="btn btn-primary load-more-btn" 
                         data-category-id="{{ $category->id }}"
-                        data-offset="9"
+                        data-offset="12"
                         data-total="{{ $category->total_products }}">
-                    تحميل المزيد ({{ $category->total_products - 9 }} منتجات متبقية)
+                    تحميل المزيد ({{ $category->total_products - 12 }} منتجات متبقية)
                 </button>
             </div>
         @endif

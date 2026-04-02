@@ -26,7 +26,7 @@
                         </div>
                         <div class="mb-3">
                             <i class="fa-solid fa-angles-left"></i> <a class="text-decoration-none mainColor"
-                                href="{{route('page','pay')}}">طرق الدفع والأقساط</a>
+                                href="{{route('page','pay')}}">طرق الدفع </a>
                         </div>
 
                         <div class="mb-3">
@@ -128,8 +128,8 @@
                         الحقوق محفوظة | {{ get_general_value('website_name') }}-{{ now()->format('Y') }} </div>
                     <div
                         class="col-md-6 col-12  d-flex text-center align-items-center justify-content-center justify-content-lg-end ">
-                        <span style="font-size: 13px; " class="me-2 d-none d-lg-block">الرقم الضريبي :
-                            {{ get_general_value('number_dareba') }}</span>
+                        {{-- <span style="font-size: 13px; " class="me-2 d-none d-lg-block">الرقم الضريبي :
+                            {{ get_general_value('number_dareba') }}</span> --}}
                         @foreach (App\Models\Paymentimage::get() as $item)
                             <a href="{{$item->link}}" target="_blank" class="me-1">
                                 <span class="me-1"
@@ -141,8 +141,8 @@
                         @endforeach
 
                     </div>
-                    <span style="font-size: 13px; " class="me-2 fs d-block d-lg-none mb-3 mt-2">الرقم الضريبي :
-                        {{ get_general_value('number_dareba') }}</span>
+                    {{-- <span style="font-size: 13px; " class="me-2 fs d-block d-lg-none mb-3 mt-2">الرقم الضريبي :
+                        {{ get_general_value('number_dareba') }}</span> --}}
                     <div class="col-md-6 col-12 text-center d-block d-lg-none">
                         الحقوق محفوظة | {{ get_general_value('website_name') }}-{{ now()->format('Y') }} </div>
 
@@ -412,12 +412,12 @@ $(document).ready(function() {
         
         $.ajax({
             url: '{{ route("load.more.products") }}',
-            method: 'POST',
+            method: 'get',
             data: {
-                _token: '{{ csrf_token() }}',
+                // _token: '{{ csrf_token() }}',
                 category_id: categoryId,
                 offset: offset,
-                limit: 9,
+                limit: 12,
                 country_id: '{{ session('country_id') }}'
             },
             success: function(response) {
@@ -425,7 +425,7 @@ $(document).ready(function() {
                     // إضافة المنتجات الجديدة داخل نفس الـ container
                     $('#products-container-' + categoryId).append(response.html);
                     
-                    const newOffset = offset + 9;
+                    const newOffset = offset + 12;
                     button.data('offset', newOffset);
                     const remaining = total - newOffset;
                     

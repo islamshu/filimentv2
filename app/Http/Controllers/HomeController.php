@@ -75,10 +75,10 @@ class HomeController extends Controller
             $category->all_products = $products;
 
             // تخزين أول 8 منتجات للعرض الأولي
-            $category->initial_products = $products->take(9);
+            $category->initial_products = $products->take(12);
 
             // تحديد إذا كان هناك أكثر من 8 منتجات
-            $category->has_more_products = $products->count() > 9;
+            $category->has_more_products = $products->count() > 12;
 
             // العدد الإجمالي للمنتجات
             $category->total_products = $products->count();
@@ -100,7 +100,7 @@ class HomeController extends Controller
     {
         $categoryId = $request->category_id;
         $offset = $request->offset ?? 0;
-        $limit = $request->limit ?? 9;
+        $limit = $request->limit ?? 12;
         $countryId = $request->country_id ?? session('country_id');
 
         $category = SubCategory::with(['products' => function ($query) use ($countryId, $offset, $limit) {

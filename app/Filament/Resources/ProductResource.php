@@ -70,7 +70,7 @@ class ProductResource extends Resource
                 ]),
                 Select::make('countries')
                     ->label('الدول')
-                    ->multiple() // مهم لأنه أكثر من دولة
+                    // ->multiple() // مهم لأنه أكثر من دولة
                     ->relationship('countries', 'name') // العلاقة
                     ->preload()
                     ->searchable(),

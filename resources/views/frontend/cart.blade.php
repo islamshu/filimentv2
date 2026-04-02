@@ -437,16 +437,16 @@
                             // تحديث المجموع الفردي للمنتج
                             form.closest('.row')
                                 .find('.total-price')
-                                .text('المجموع: ' + total + ' {{ get_general_value('currancy') }}');
+                                .text('المجموع: ' + total + ' {{ get_currancy() }}');
 
                             // تحديث المجموع الكلي في input وفي النصوص الأخرى
                             const newTotal = response.totalPrice;
                         $('#TotalPrice').val(newTotal);
                         $('#FirstPayment').val(newTotal);
                             $('.total_price').text(newTotal +
-                                ' {{ get_general_value('currancy') }}'); // المجموع في الصندوق الأبيض
+                                ' {{ get_currancy() }}'); // المجموع في الصندوق الأبيض
                             $('#floatingTotal').text(newTotal +
-                                ' {{ get_general_value('currancy') }}'); // الصندوق العائم
+                                ' {{ get_currancy() }}'); // الصندوق العائم
                         }
                     },
                     error: function(xhr) {
