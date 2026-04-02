@@ -208,13 +208,13 @@ footer div {
             <div class="table" style="margin-top: 10px;">
                 <div class="text_info_table flex" style="align-items: flex-start;">
                     <div>
-                        <div style="text-align: right;"><span>مدة الأقساط : </span> {{ $order->CashOrBatch }} </div>
+                        {{-- <div style="text-align: right;"><span>مدة الأقساط : </span> {{ $order->CashOrBatch }} </div> --}}
                         <div style="text-align: right; color: #f00"><span>المبلغ الكلي : </span> {{ $totalPrice }}
                             {{ get_currancy() }}</div>
                     </div>
                     <div>
-                        <div style="text-align: right;"><span>الدفعة الأولى : </span> {{ $order->first_batch }}
-                            {{ get_currancy() }}</div>
+                        {{-- <div style="text-align: right;"><span>الدفعة الأولى : </span> {{ $order->first_batch }}
+                            {{ get_currancy() }}</div> --}}
                         <div style="text-align: right;"><span>الختم : </span></div>
                     </div>
                 </div>
@@ -229,7 +229,7 @@ footer div {
                 </div>
             </div>
             <div>
-                
+{{--                 
                 <table class="table" style="width:100%;margin-top:10px;">
                                     <thead>
                                         <tr>
@@ -282,7 +282,7 @@ footer div {
                                      
                                                                 
                                     </tbody>
-                                </table>
+                                </table> --}}
                                               
                             </div>
             <footer class="flex">
