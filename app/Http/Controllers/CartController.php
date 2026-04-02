@@ -170,7 +170,7 @@ class CartController extends Controller
     . "واتساب: " . $order->whatsapp . PHP_EOL
     . "العنوان: " . $order->location . PHP_EOL
 
-    . "المبلغ الإجمالي: " . $order->payment . PHP_EOL
+    . "المبلغ الإجمالي: " . $order->payment .' '. get_currancy() . PHP_EOL
     // . "الدفعة الأولى: " . $order->first_batch . PHP_EOL
     . "طريقة الدفع: عند الاستلام" . PHP_EOL
     . "ملاحظات: " . $order->note . PHP_EOL
